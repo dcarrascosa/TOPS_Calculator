@@ -30,6 +30,28 @@ python3 -m http.server 8000
 # then open http://localhost:8000
 ```
 
+## Tests
+
+Unit tests for the calculator math (no dependencies, uses Node's built-in test runner):
+
+```bash
+npm test
+```
+
+End-to-end tests with Playwright (drives a real browser against the live page):
+
+```bash
+npm install        # only the first time, installs @playwright/test
+npx playwright install chromium   # only the first time, downloads the browser
+npm run test:e2e
+```
+
+Run both in one go:
+
+```bash
+npm run test:all
+```
+
 ## The math (short version)
 
 For each generated token, an LLM does roughly `2 × N` operations, where `N` is the parameter count. So:

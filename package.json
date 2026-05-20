@@ -5,7 +5,12 @@
   "private": true,
   "scripts": {
     "test": "node --test tests/calculator.test.js",
+    "test:e2e": "playwright test",
+    "test:all": "npm run test && npm run test:e2e",
     "serve": "python3 -m http.server 8000"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "1.55"
+  }
 }
