@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LLM TOPS Calculator</title>
+  <meta name="description" content="Estimate how many TOPS you need to run local LLMs (Llama, Mistral, Qwen…) at different quantizations on Mac." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <h1>LLM TOPS Calculator</h1>
+      <p class="tagline">How many TOPS does it really take to run a local LLM on your Mac?</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <h2>Inputs</h2>
+      <div class="grid">
+        <label class="field">
+          <span>Model</span>
+          <select id="model"></select>
+        </label>
+
+        <label class="field" id="customParamsField" hidden>
+          <span>Custom parameters (billions)</span>
+          <input type="number" id="customParams" min="0.1" step="0.1" value="7" />
+        </label>
+
+        <label class="field">
+          <span>Quantization</span>
+          <select id="quant">
+            <option value="16">FP16 (2 bytes/param)</option>
+            <option value="8">8-bit (1 byte/param)</option>
+            <option value="4" selected>4-bit (0.5 bytes/param)</option>
+            <option value="3">3-bit (~0.4 bytes/param)</option>
+            <option value="2">2-bit (~0.25 bytes/param)</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Target tokens / second</span>
+          <select id="targetPreset">
+            <option value="5">5 — reading speed</option>
+            <option value="10">10 — conversational</option>
+            <option value="20" selected>20 — fast chat</option>
+            <option value="30">30 — real-time</option>
+            <option value="60">60 — agentic / coding</option>
+            <option value="custom">Custom…</option>
+          </select>
+        </label>
+
+        <label class="field" id="customTargetField" hidden>
+          <span>Custom tokens/sec</span>
+          <input type="number" id="customTarget" min="1" step="1" value="20" />
+        </label>
+
+        <label class="field">
+          <span>Context length (tokens)</span>
+          <select id="context">
+            <option value="2048">2k</option>
+            <option value="4096">4k</option>
+            <option value="8192" selected>8k</option>
+            <option value="16384">16k</option>
+            <option value="32768">32k</option>
+            <option value="131072">128k</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Real-world efficiency</span>
+          <select id="efficiency">
+            <option value="0.4">40% — well-optimized (MLX, llama.cpp tuned)</option>
+            <option value="0.25" selected>25% — typical</option>
+            <option value="0.15">15% — cold path / generic kernels</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Your hardware</span>
+          <select id="hardware"></select>
+        </label>
+
+        <label class="field" id="customHardwareField" hidden>
+          <span>Custom TOPS (INT8)</span>
+          <input type="number" id="customTops" min="1" step="1" value="38" />
+        </label>
+
+        <label class="field" id="customBandwidthField" hidden>
+          <span>Custom memory bandwidth (GB/s)</span>
+          <input type="number" id="customBandwidth" min="10" step="10" value="120" />
+        </label>
+      </div>
+    </section>
+
+    <section class="card results" id="results">
+      <h2>Results</h2>
+      <div class="result-grid">
+        <div class="metric">
+          <div class="metric-label">Required raw TOPS</div>
+          <div class="metric-value" id="rawTops">—</div>
+          <div class="metric-help">Theoretical floor: 2 × params × tokens/sec.</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Required effective TOPS</div>
+          <div class="metric-value" id="effectiveTops">—</div>
+          <div class="metric-help">Raw ÷ efficiency. What you actually need on the spec sheet.</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Weights memory</div>
+          <div class="metric-value" id="weightsMem">—</div>
+          <div class="metric-help">RAM needed just to hold the model.</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">KV cache memory</div>
+          <div class="metric-value" id="kvMem">—</div>
+          <div class="metric-help">Grows with context length.</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Total memory</div>
+          <div class="metric-value" id="totalMem">—</div>
+          <div class="metric-help">Weights + KV cache + ~1 GB overhead.</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Bandwidth ceiling</div>
+          <div class="metric-value" id="bandwidthCeiling">—</div>
+          <div class="metric-help">Max tokens/sec your RAM bandwidth allows (batch=1).</div>
+        </div>
+      </div>
+
+      <div class="verdict" id="verdict">
+        Pick a model and a target to see the verdict.
+      </div>
+    </section>
+
+    <section class="card explainer">
+      <h2>Why TOPS isn't the whole story on a Mac</h2>
+      <p>
+        Apple advertises Neural Engine TOPS (38 on M4, for example), but most local LLM runtimes —
+        <strong>llama.cpp</strong>, <strong>Ollama</strong>, <strong>MLX</strong>, <strong>LM Studio</strong> —
+        run on the <strong>GPU</strong>, not the Neural Engine. For batch=1 inference (one user, one prompt),
+        the bottleneck is almost always <strong>memory bandwidth</strong>, not compute.
+      </p>
+      <p>
+        Rule of thumb: you can't generate tokens faster than your RAM can stream the model's weights through the
+        chip. A 4 GB quantized model on a chip with 120 GB/s bandwidth caps out around 30 tokens/sec — no matter
+        how many TOPS the spec sheet says.
+      </p>
+      <p>
+        That's why this calculator shows both numbers. If you're trying to decide whether 38–50 TOPS is enough for
+        professional use, the honest answer is: <strong>yes, comfortably — but check the bandwidth ceiling for the
+        model you actually want to run.</strong>
+      </p>
+    </section>
+
+    <footer class="foot">
+      <p>
+        <a href="https://github.com/dcarrascosa/tops_calculator">Source on GitHub</a> ·
+        MIT licensed · estimates only, not benchmarks.
+      </p>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
