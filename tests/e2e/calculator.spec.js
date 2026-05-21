@@ -112,4 +112,15 @@ test.describe('LLM TOPS Calculator', () => {
     await expect(page.locator('.explainer')).toContainText('memory bandwidth');
     await expect(page.locator('.explainer')).toContainText('Neural Engine');
   });
+
+  test('declares an inline svg favicon (no /favicon.ico 404)', async ({ page }) => {
+    const requests404 = [];
+    page.on('response', (res) => {
+      if (res.status() === 404) requests404.push(res.url());
+    });
+    await page.reload();
+    const href = await page.locator('link[rel="icon"]').getAttribute('href');
+    expect(href).toMatch(/^data:image\/svg\+xml/);
+    expect(requests404.filter((u) => u.endsWith('/favicon.ico'))).toEqual([]);
+  });
 });
