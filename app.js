@@ -3,7 +3,13 @@
 
 (function () {
   const C = window.Calculator;
-  const { MODELS, HARDWARE, compute, classifyVerdict, fmtGB, fmtTops, fmtTps } = C;
+  const {
+    MODELS, HARDWARE, compute, classifyVerdict,
+    encodeStateToUrl, decodeStateFromUrl,
+    fmtGB, fmtTops, fmtTps,
+  } = C;
+
+  const TARGET_PRESETS = ['5', '10', '20', '30', '60'];
 
   // --- DOM refs -------------------------------------------------------------
   const modelEl           = document.getElementById('model');
@@ -28,6 +34,8 @@
   const totalMemEl   = document.getElementById('totalMem');
   const bwCeilEl     = document.getElementById('bandwidthCeiling');
   const verdictEl    = document.getElementById('verdict');
+  const shareBtn     = document.getElementById('shareBtn');
+  const shareFeedback= document.getElementById('shareFeedback');
 
   // --- populate selects -----------------------------------------------------
   function populate() {
@@ -110,6 +118,73 @@
       bandwidthCeiling: r.bandwidthCeiling,
       totalBytes: r.totalBytes,
     });
+
+    syncUrl({ model, hw, target, quantBits, context, efficiency });
+  }
+
+  // --- url sync -------------------------------------------------------------
+  function currentStateForUrl({ model, hw, target, quantBits, context, efficiency }) {
+    return {
+      modelName:       model.name,
+      customParams:    model.name === 'Custom' ? model.params : null,
+      quantBits,
+      target,
+      context,
+      efficiency,
+      hardwareName:    hw.name,
+      customTops:      hw.name === 'Custom' ? hw.tops : null,
+      customBandwidth: hw.name === 'Custom' ? hw.bandwidth : null,
+    };
+  }
+
+  function syncUrl(view) {
+    const qs = encodeStateToUrl(currentStateForUrl(view));
+    const newUrl = window.location.pathname + (qs ? '?' + qs : '');
+    if (window.location.search !== '?' + qs) {
+      window.history.replaceState(null, '', newUrl);
+    }
+  }
+
+  function applyStateFromUrl() {
+    const state = decodeStateFromUrl(window.location.search);
+
+    if (state.modelName) {
+      const idx = MODELS.findIndex((m) => m.name === state.modelName);
+      if (idx >= 0) modelEl.value = String(idx);
+    }
+    if (state.customParams != null) customParamsEl.value = String(state.customParams);
+
+    if (state.quantBits != null) quantEl.value = String(state.quantBits);
+
+    if (state.target != null) {
+      if (TARGET_PRESETS.includes(String(state.target))) {
+        targetPresetEl.value = String(state.target);
+      } else {
+        targetPresetEl.value = 'custom';
+        customTargetEl.value = String(state.target);
+      }
+    }
+
+    if (state.context != null) contextEl.value = String(state.context);
+    if (state.efficiency != null) efficiencyEl.value = String(state.efficiency);
+
+    if (state.hardwareName) {
+      const idx = HARDWARE.findIndex((h) => h.name === state.hardwareName);
+      if (idx >= 0) hardwareEl.value = String(idx);
+    }
+    if (state.customTops != null) customTopsEl.value = String(state.customTops);
+    if (state.customBandwidth != null) customBwEl.value = String(state.customBandwidth);
+  }
+
+  async function copyShareLink() {
+    const url = window.location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      shareFeedback.textContent = 'Link copied';
+    } catch {
+      shareFeedback.textContent = 'Copy failed — select the address bar';
+    }
+    setTimeout(() => { shareFeedback.textContent = ''; }, 2500);
   }
 
   function renderVerdict({ model, hw, target, effectiveTops, bandwidthCeiling, totalBytes }) {
@@ -165,6 +240,7 @@
 
   function init() {
     populate();
+    applyStateFromUrl();
     toggleCustomFields();
     render();
 
@@ -176,6 +252,8 @@
       el.addEventListener('input', () => { toggleCustomFields(); render(); });
       el.addEventListener('change', () => { toggleCustomFields(); render(); });
     });
+
+    shareBtn.addEventListener('click', copyShareLink);
   }
 
   init();

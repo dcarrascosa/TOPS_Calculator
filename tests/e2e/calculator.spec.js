@@ -129,6 +129,34 @@ test.describe('LLM TOPS Calculator', () => {
     expect(parseInt(ceiling.replace(/[^\d]/g, ''), 10)).toBeGreaterThan(100);
   });
 
+  test('updates the url querystring as inputs change', async ({ page }) => {
+    await selectByText(page, '#hardware', 'Apple M4 Max');
+    await page.selectOption('#quant', '8');
+    const url = page.url();
+    expect(url).toContain('h=Apple+M4+Max');
+    expect(url).toContain('q=8');
+  });
+
+  test('restores state from a share link on load', async ({ page }) => {
+    const link = '/?m=Mistral+7B&q=8&t=30&c=16384&e=0.4&h=Apple+M4+Max';
+    await page.goto(link);
+
+    expect(await page.locator('#model option:checked').textContent()).toBe('Mistral 7B');
+    expect(await page.locator('#quant').inputValue()).toBe('8');
+    expect(await page.locator('#targetPreset').inputValue()).toBe('30');
+    expect(await page.locator('#context').inputValue()).toBe('16384');
+    expect(await page.locator('#efficiency').inputValue()).toBe('0.4');
+    expect((await page.locator('#hardware option:checked').textContent()) || '').toContain('Apple M4 Max');
+  });
+
+  test('share button copies the url and shows feedback', async ({ context, page }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.click('#shareBtn');
+    await expect(page.locator('#shareFeedback')).toHaveText('Link copied');
+    const copied = await page.evaluate(() => navigator.clipboard.readText());
+    expect(copied).toContain('?');
+  });
+
   test('declares an inline svg favicon (no /favicon.ico 404)', async ({ page }) => {
     const requests404 = [];
     page.on('response', (res) => {
