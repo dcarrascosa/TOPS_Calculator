@@ -7,7 +7,10 @@ module.exports = defineConfig({
   testDir: './tests/e2e',
   timeout: 15_000,
   fullyParallel: true,
-  reporter: [['list']],
+  reporter: [
+    ['list'],
+    ['html', { open: 'never', outputFolder: 'playwright-report' }],
+  ],
   use: {
     baseURL: 'http://127.0.0.1:8765',
     headless: true,
