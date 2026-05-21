@@ -147,6 +147,40 @@
     return 'warn';
   }
 
+  // --- URL state ------------------------------------------------------------
+  // Serialize the current UI inputs as a querystring and back, so a config
+  // can be shared as a link. Names (not indices) are used for `m` and `h` to
+  // stay stable across preset list reorderings.
+  function encodeStateToUrl(state) {
+    const p = new URLSearchParams();
+    if (state.modelName) p.set('m', state.modelName);
+    if (state.customParams != null) p.set('mp', String(state.customParams));
+    if (state.quantBits != null) p.set('q', String(state.quantBits));
+    if (state.target != null) p.set('t', String(state.target));
+    if (state.context != null) p.set('c', String(state.context));
+    if (state.efficiency != null) p.set('e', String(state.efficiency));
+    if (state.hardwareName) p.set('h', state.hardwareName);
+    if (state.customTops != null) p.set('ht', String(state.customTops));
+    if (state.customBandwidth != null) p.set('hb', String(state.customBandwidth));
+    return p.toString();
+  }
+
+  function decodeStateFromUrl(search) {
+    const p = new URLSearchParams(search || '');
+    const num = (v) => (v == null || v === '' ? null : Number(v));
+    return {
+      modelName:       p.get('m'),
+      customParams:    num(p.get('mp')),
+      quantBits:       num(p.get('q')),
+      target:          num(p.get('t')),
+      context:         num(p.get('c')),
+      efficiency:      num(p.get('e')),
+      hardwareName:    p.get('h'),
+      customTops:      num(p.get('ht')),
+      customBandwidth: num(p.get('hb')),
+    };
+  }
+
   // --- formatters -----------------------------------------------------------
   function fmtGB(bytes) {
     const gb = bytes / 1e9;
@@ -180,6 +214,8 @@
     computeBandwidthCeiling,
     compute,
     classifyVerdict,
+    encodeStateToUrl,
+    decodeStateFromUrl,
     fmtGB,
     fmtTops,
     fmtTps,

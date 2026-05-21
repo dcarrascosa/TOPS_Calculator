@@ -330,3 +330,92 @@ test('flagship NVIDIA datacenter cards have huge bandwidth (sanity check)', () =
   expect(a100.bandwidth).toBeGreaterThan(1500);
   expect(h100.bandwidth).toBeGreaterThan(2500);
 });
+
+// ---------------------------------------------------------------------------
+// URL state
+// ---------------------------------------------------------------------------
+test('encodeStateToUrl includes only non-null fields', () => {
+  const qs = C.encodeStateToUrl({
+    modelName: 'Llama 3.1 / 3 8B',
+    customParams: null,
+    quantBits: 4,
+    target: 20,
+    context: 8192,
+    efficiency: 0.25,
+    hardwareName: 'Apple M4',
+    customTops: null,
+    customBandwidth: null,
+  });
+  const p = new URLSearchParams(qs);
+  expect(p.get('m')).toBe('Llama 3.1 / 3 8B');
+  expect(p.get('q')).toBe('4');
+  expect(p.get('t')).toBe('20');
+  expect(p.get('c')).toBe('8192');
+  expect(p.get('e')).toBe('0.25');
+  expect(p.get('h')).toBe('Apple M4');
+  expect(p.has('mp')).toBe(false);
+  expect(p.has('ht')).toBe(false);
+  expect(p.has('hb')).toBe(false);
+});
+
+test('encodeStateToUrl includes custom fields when set', () => {
+  const qs = C.encodeStateToUrl({
+    modelName: 'Custom',
+    customParams: 13,
+    quantBits: 8,
+    target: 120,
+    context: 32768,
+    efficiency: 0.4,
+    hardwareName: 'Custom',
+    customTops: 50,
+    customBandwidth: 256,
+  });
+  const p = new URLSearchParams(qs);
+  expect(p.get('mp')).toBe('13');
+  expect(p.get('ht')).toBe('50');
+  expect(p.get('hb')).toBe('256');
+});
+
+test('decodeStateFromUrl parses every field as the right type', () => {
+  const s = C.decodeStateFromUrl(
+    '?m=Apple%20M4&mp=13&q=4&t=20&c=8192&e=0.25&h=Apple%20M4&ht=50&hb=256'
+  );
+  expect(s.modelName).toBe('Apple M4');
+  expect(s.customParams).toBe(13);
+  expect(s.quantBits).toBe(4);
+  expect(s.target).toBe(20);
+  expect(s.context).toBe(8192);
+  expect(s.efficiency).toBe(0.25);
+  expect(s.hardwareName).toBe('Apple M4');
+  expect(s.customTops).toBe(50);
+  expect(s.customBandwidth).toBe(256);
+});
+
+test('decodeStateFromUrl returns nulls for missing fields', () => {
+  const s = C.decodeStateFromUrl('');
+  expect(s.modelName).toBeNull();
+  expect(s.customParams).toBeNull();
+  expect(s.quantBits).toBeNull();
+});
+
+test('encode then decode round-trips a full state', () => {
+  const original = {
+    modelName: 'Llama 3.1 / 3 8B',
+    customParams: null,
+    quantBits: 4,
+    target: 30,
+    context: 16384,
+    efficiency: 0.4,
+    hardwareName: 'Apple M4 Max',
+    customTops: null,
+    customBandwidth: null,
+  };
+  const qs = C.encodeStateToUrl(original);
+  const decoded = C.decodeStateFromUrl('?' + qs);
+  expect(decoded.modelName).toBe(original.modelName);
+  expect(decoded.quantBits).toBe(original.quantBits);
+  expect(decoded.target).toBe(original.target);
+  expect(decoded.context).toBe(original.context);
+  expect(decoded.efficiency).toBe(original.efficiency);
+  expect(decoded.hardwareName).toBe(original.hardwareName);
+});
