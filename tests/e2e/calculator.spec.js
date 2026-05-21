@@ -113,6 +113,22 @@ test.describe('LLM TOPS Calculator', () => {
     await expect(page.locator('.explainer')).toContainText('Neural Engine');
   });
 
+  test('hardware dropdown groups options by vendor with optgroups', async ({ page }) => {
+    const groupLabels = await page.locator('#hardware optgroup').evaluateAll(
+      (els) => els.map((e) => e.label)
+    );
+    expect(groupLabels).toContain('Apple Silicon');
+    expect(groupLabels).toContain('NVIDIA GeForce');
+    expect(groupLabels).toContain('AMD Radeon');
+  });
+
+  test('selecting an NVIDIA gpu updates the verdict and bandwidth ceiling', async ({ page }) => {
+    await selectByText(page, '#hardware', 'NVIDIA RTX 4090');
+    await expect(page.locator('#verdict')).toHaveClass(/good/);
+    const ceiling = await page.locator('#bandwidthCeiling').textContent();
+    expect(parseInt(ceiling.replace(/[^\d]/g, ''), 10)).toBeGreaterThan(100);
+  });
+
   test('declares an inline svg favicon (no /favicon.ico 404)', async ({ page }) => {
     const requests404 = [];
     page.on('response', (res) => {

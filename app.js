@@ -38,6 +38,7 @@
       if (m.name.startsWith('Llama 3.1 / 3 8B')) opt.selected = true;
       modelEl.appendChild(opt);
     });
+    const groups = new Map();
     HARDWARE.forEach((h, i) => {
       const opt = document.createElement('option');
       opt.value = String(i);
@@ -45,7 +46,18 @@
         ? `${h.name}  ·  ${h.tops} TOPS  ·  ${h.bandwidth} GB/s`
         : h.name;
       if (h.name === 'Apple M4') opt.selected = true;
-      hardwareEl.appendChild(opt);
+      if (!h.group) {
+        hardwareEl.appendChild(opt);
+        return;
+      }
+      let og = groups.get(h.group);
+      if (!og) {
+        og = document.createElement('optgroup');
+        og.label = h.group;
+        hardwareEl.appendChild(og);
+        groups.set(h.group, og);
+      }
+      og.appendChild(opt);
     });
   }
 

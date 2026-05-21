@@ -314,3 +314,19 @@ test('preset list includes flagship 2024-2025 models', () => {
   expect(names.some((n) => n.startsWith('Qwen 3'))).toBe(true);
   expect(names.some((n) => n.startsWith('Gemma 3'))).toBe(true);
 });
+
+test('hardware presets cover Apple, NVIDIA, AMD and Copilot+ PC NPUs', () => {
+  const groups = new Set(C.HARDWARE.filter((h) => h.group).map((h) => h.group));
+  expect(groups.has('Apple Silicon')).toBe(true);
+  expect(groups.has('NVIDIA GeForce')).toBe(true);
+  expect(groups.has('NVIDIA Datacenter')).toBe(true);
+  expect(groups.has('AMD Radeon')).toBe(true);
+  expect(groups.has('Copilot+ PC NPUs')).toBe(true);
+});
+
+test('flagship NVIDIA datacenter cards have huge bandwidth (sanity check)', () => {
+  const a100 = C.HARDWARE.find((h) => h.name.startsWith('NVIDIA A100'));
+  const h100 = C.HARDWARE.find((h) => h.name.startsWith('NVIDIA H100'));
+  expect(a100.bandwidth).toBeGreaterThan(1500);
+  expect(h100.bandwidth).toBeGreaterThan(2500);
+});
