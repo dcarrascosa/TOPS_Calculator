@@ -10,28 +10,34 @@
 </head>
 <body>
   <header class="topbar">
-    <div class="wrap">
-      <h1>LLM TOPS Calculator</h1>
-      <p class="tagline">How many TOPS does it really take to run a local LLM on your Mac?</p>
+    <div class="wrap topbar-wrap">
+      <div>
+        <h1 data-i18n="title">LLM TOPS Calculator</h1>
+        <p class="tagline" data-i18n="tagline">How many TOPS does it really take to run a local LLM on your Mac?</p>
+      </div>
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button type="button" class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" class="lang-btn" data-lang="es" aria-pressed="false">ES</button>
+      </div>
     </div>
   </header>
 
   <main class="wrap">
     <section class="card">
-      <h2>Inputs</h2>
+      <h2 data-i18n="inputs.title">Inputs</h2>
       <div class="grid">
         <label class="field">
-          <span>Model</span>
+          <span data-i18n="inputs.model">Model</span>
           <select id="model"></select>
         </label>
 
         <label class="field" id="customParamsField" hidden>
-          <span>Custom parameters (billions)</span>
+          <span data-i18n="inputs.customParams">Custom parameters (billions)</span>
           <input type="number" id="customParams" min="0.1" step="0.1" value="7" />
         </label>
 
         <label class="field">
-          <span>Quantization</span>
+          <span data-i18n="inputs.quant">Quantization</span>
           <select id="quant">
             <option value="16">FP16 (2 bytes/param)</option>
             <option value="8">8-bit (1 byte/param)</option>
@@ -42,24 +48,24 @@
         </label>
 
         <label class="field">
-          <span>Target tokens / second</span>
+          <span data-i18n="inputs.target">Target tokens / second</span>
           <select id="targetPreset">
-            <option value="5">5 — reading speed</option>
-            <option value="10">10 — conversational</option>
-            <option value="20" selected>20 — fast chat</option>
-            <option value="30">30 — real-time</option>
-            <option value="60">60 — agentic / coding</option>
-            <option value="custom">Custom…</option>
+            <option value="5"      data-i18n="target.reading">5 — reading speed</option>
+            <option value="10"     data-i18n="target.conv">10 — conversational</option>
+            <option value="20" selected data-i18n="target.fast">20 — fast chat</option>
+            <option value="30"     data-i18n="target.realtime">30 — real-time</option>
+            <option value="60"     data-i18n="target.agentic">60 — agentic / coding</option>
+            <option value="custom" data-i18n="target.custom">Custom…</option>
           </select>
         </label>
 
         <label class="field" id="customTargetField" hidden>
-          <span>Custom tokens/sec</span>
+          <span data-i18n="inputs.customTarget">Custom tokens/sec</span>
           <input type="number" id="customTarget" min="1" step="1" value="20" />
         </label>
 
         <label class="field">
-          <span>Context length (tokens)</span>
+          <span data-i18n="inputs.context">Context length (tokens)</span>
           <select id="context">
             <option value="2048">2k</option>
             <option value="4096">4k</option>
@@ -71,82 +77,82 @@
         </label>
 
         <label class="field">
-          <span>Real-world efficiency</span>
+          <span data-i18n="inputs.efficiency">Real-world efficiency</span>
           <select id="efficiency">
-            <option value="0.4">40% — well-optimized (MLX, llama.cpp tuned)</option>
-            <option value="0.25" selected>25% — typical</option>
-            <option value="0.15">15% — cold path / generic kernels</option>
+            <option value="0.4"  data-i18n="eff.tuned">40% — well-optimized (MLX, llama.cpp tuned)</option>
+            <option value="0.25" selected data-i18n="eff.typical">25% — typical</option>
+            <option value="0.15" data-i18n="eff.cold">15% — cold path / generic kernels</option>
           </select>
         </label>
 
         <label class="field">
-          <span>Your hardware</span>
+          <span data-i18n="inputs.hardware">Your hardware</span>
           <select id="hardware"></select>
         </label>
 
         <label class="field" id="customHardwareField" hidden>
-          <span>Custom TOPS (INT8)</span>
+          <span data-i18n="inputs.customTops">Custom TOPS (INT8)</span>
           <input type="number" id="customTops" min="1" step="1" value="38" />
         </label>
 
         <label class="field" id="customBandwidthField" hidden>
-          <span>Custom memory bandwidth (GB/s)</span>
+          <span data-i18n="inputs.customBw">Custom memory bandwidth (GB/s)</span>
           <input type="number" id="customBandwidth" min="10" step="10" value="120" />
         </label>
       </div>
     </section>
 
     <section class="card results" id="results">
-      <h2>Results</h2>
+      <h2 data-i18n="results.title">Results</h2>
       <div class="result-grid">
         <div class="metric">
-          <div class="metric-label">Required raw TOPS</div>
+          <div class="metric-label" data-i18n="results.rawTops">Required raw TOPS</div>
           <div class="metric-value" id="rawTops">—</div>
-          <div class="metric-help">Theoretical floor: 2 × params × tokens/sec.</div>
+          <div class="metric-help" data-i18n="results.rawTopsHelp">Theoretical floor: 2 × params × tokens/sec.</div>
         </div>
         <div class="metric">
-          <div class="metric-label">Required effective TOPS</div>
+          <div class="metric-label" data-i18n="results.effTops">Required effective TOPS</div>
           <div class="metric-value" id="effectiveTops">—</div>
-          <div class="metric-help">Raw ÷ efficiency. What you actually need on the spec sheet.</div>
+          <div class="metric-help" data-i18n="results.effTopsHelp">Raw ÷ efficiency. What you actually need on the spec sheet.</div>
         </div>
         <div class="metric">
-          <div class="metric-label">Weights memory</div>
+          <div class="metric-label" data-i18n="results.weights">Weights memory</div>
           <div class="metric-value" id="weightsMem">—</div>
-          <div class="metric-help">RAM needed just to hold the model.</div>
+          <div class="metric-help" data-i18n="results.weightsHelp">RAM needed just to hold the model.</div>
         </div>
         <div class="metric">
-          <div class="metric-label">KV cache memory</div>
+          <div class="metric-label" data-i18n="results.kv">KV cache memory</div>
           <div class="metric-value" id="kvMem">—</div>
-          <div class="metric-help">Grows with context length.</div>
+          <div class="metric-help" data-i18n="results.kvHelp">Grows with context length.</div>
         </div>
         <div class="metric">
-          <div class="metric-label">Total memory</div>
+          <div class="metric-label" data-i18n="results.total">Total memory</div>
           <div class="metric-value" id="totalMem">—</div>
-          <div class="metric-help">Weights + KV cache + ~1 GB overhead.</div>
+          <div class="metric-help" data-i18n="results.totalHelp">Weights + KV cache + ~1 GB overhead.</div>
         </div>
         <div class="metric">
-          <div class="metric-label">Bandwidth ceiling</div>
+          <div class="metric-label" data-i18n="results.bw">Bandwidth ceiling</div>
           <div class="metric-value" id="bandwidthCeiling">—</div>
-          <div class="metric-help">Max tokens/sec your RAM bandwidth allows (batch=1).</div>
+          <div class="metric-help" data-i18n="results.bwHelp">Max tokens/sec your RAM bandwidth allows (batch=1).</div>
         </div>
       </div>
 
-      <div class="verdict" id="verdict">
+      <div class="verdict" id="verdict" data-i18n="verdict.default">
         Pick a model and a target to see the verdict.
       </div>
 
       <div class="actions">
-        <button type="button" id="shareBtn" class="btn">Copy share link</button>
-        <button type="button" id="copyMarkdownBtn" class="btn">Copy as markdown</button>
-        <button type="button" id="downloadMarkdownBtn" class="btn btn-secondary">Download .md</button>
+        <button type="button" id="shareBtn"          class="btn"                data-i18n="actions.share">Copy share link</button>
+        <button type="button" id="copyMarkdownBtn"   class="btn"                data-i18n="actions.copyMd">Copy as markdown</button>
+        <button type="button" id="downloadMarkdownBtn" class="btn btn-secondary" data-i18n="actions.downloadMd">Download .md</button>
         <span class="actions-feedback" id="shareFeedback" aria-live="polite"></span>
         <span class="actions-feedback" id="exportFeedback" aria-live="polite"></span>
       </div>
     </section>
 
     <section class="card chart-card">
-      <h2>What fits your hardware</h2>
-      <p class="chart-help">
+      <h2 data-i18n="chart.title">What fits your hardware</h2>
+      <p class="chart-help" data-i18n="chart.help">
         Tokens/sec ceiling (bandwidth-bound, batch=1) for a curated set of models
         on your selected hardware at the chosen quantization. Bars are coloured
         against your tokens/sec target.
@@ -155,19 +161,19 @@
     </section>
 
     <section class="card explainer">
-      <h2>Why TOPS isn't the whole story on a Mac</h2>
-      <p>
+      <h2 data-i18n="explainer.title">Why TOPS isn't the whole story on a Mac</h2>
+      <p data-i18n-html="explainer.p1">
         Apple advertises Neural Engine TOPS (38 on M4, for example), but most local LLM runtimes —
         <strong>llama.cpp</strong>, <strong>Ollama</strong>, <strong>MLX</strong>, <strong>LM Studio</strong> —
         run on the <strong>GPU</strong>, not the Neural Engine. For batch=1 inference (one user, one prompt),
         the bottleneck is almost always <strong>memory bandwidth</strong>, not compute.
       </p>
-      <p>
+      <p data-i18n-html="explainer.p2">
         Rule of thumb: you can't generate tokens faster than your RAM can stream the model's weights through the
         chip. A 4 GB quantized model on a chip with 120 GB/s bandwidth caps out around 30 tokens/sec — no matter
         how many TOPS the spec sheet says.
       </p>
-      <p>
+      <p data-i18n-html="explainer.p3">
         That's why this calculator shows both numbers. If you're trying to decide whether 38–50 TOPS is enough for
         professional use, the honest answer is: <strong>yes, comfortably — but check the bandwidth ceiling for the
         model you actually want to run.</strong>
@@ -176,8 +182,8 @@
 
     <footer class="foot">
       <p>
-        <a href="https://github.com/dcarrascosa/tops_calculator">Source on GitHub</a> ·
-        MIT licensed · estimates only, not benchmarks.
+        <a href="https://github.com/dcarrascosa/tops_calculator" data-i18n="foot.source">Source on GitHub</a> ·
+        <span data-i18n="foot.note">MIT licensed · estimates only, not benchmarks.</span>
       </p>
     </footer>
   </main>

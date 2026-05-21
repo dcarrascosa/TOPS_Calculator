@@ -53,6 +53,44 @@ html, body {
   margin-bottom: 24px;
 }
 
+.topbar-wrap {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.lang-toggle {
+  display: inline-flex;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.lang-btn {
+  background: transparent;
+  color: var(--text-dim);
+  border: 0;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.lang-btn:hover {
+  color: var(--text);
+}
+
+.lang-btn[aria-pressed="true"] {
+  background: var(--accent);
+  color: white;
+}
+
 .topbar h1 {
   font-size: 28px;
   margin: 0 0 6px;
