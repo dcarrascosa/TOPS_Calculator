@@ -33,10 +33,11 @@ It's pure HTML + CSS + JS. No build step, no dependencies, no install.
 1. Clone the repo.
 2. Double-click `index.html`.
 
-That's it. Or open it via any static server:
+That's it. Or run the bundled npm script (uses `http-server`, works on Windows / macOS / Linux):
 
 ```bash
-python3 -m http.server 8000
+npm install   # only the first time
+npm run serve
 # then open http://localhost:8000
 ```
 
