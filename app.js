@@ -6,6 +6,7 @@
   const {
     MODELS, HARDWARE, compute, classifyVerdict,
     encodeStateToUrl, decodeStateFromUrl,
+    buildComparison,
     fmtGB, fmtTops, fmtTps,
   } = C;
 
@@ -36,6 +37,7 @@
   const verdictEl    = document.getElementById('verdict');
   const shareBtn     = document.getElementById('shareBtn');
   const shareFeedback= document.getElementById('shareFeedback');
+  const chartEl      = document.getElementById('chart');
 
   // --- populate selects -----------------------------------------------------
   function populate() {
@@ -120,6 +122,7 @@
     });
 
     syncUrl({ model, hw, target, quantBits, context, efficiency });
+    renderChart({ hw, quantBits, target });
   }
 
   // --- url sync -------------------------------------------------------------
@@ -185,6 +188,51 @@
       shareFeedback.textContent = 'Copy failed — select the address bar';
     }
     setTimeout(() => { shareFeedback.textContent = ''; }, 2500);
+  }
+
+  // --- chart ----------------------------------------------------------------
+  function renderChart({ hw, quantBits, target }) {
+    const data = buildComparison({ hw, quantBits, target });
+    if (!data.length) {
+      chartEl.innerHTML = '<p class="chart-help">Select a hardware preset to see the comparison.</p>';
+      return;
+    }
+
+    const W = 720, H = 240, padL = 40, padR = 20, padT = 24, padB = 56;
+    const innerW = W - padL - padR;
+    const innerH = H - padT - padB;
+    const max = Math.max(target, ...data.map((d) => d.ceiling || 0)) * 1.15;
+    const xStep = innerW / data.length;
+    const barW = Math.min(60, xStep - 14);
+
+    const yFromValue = (v) => padT + innerH - (v / max) * innerH;
+    const escapeXml = (s) => String(s).replace(/[&<>"']/g, (c) => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+
+    const bars = data.map((d, i) => {
+      const x = padL + i * xStep + (xStep - barW) / 2;
+      const value = Math.max(0.1, d.ceiling || 0);
+      const y = yFromValue(value);
+      const h = padT + innerH - y;
+      const labelX = padL + i * xStep + xStep / 2;
+      return `
+        <rect class="bar ${d.verdict}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="3" />
+        <text class="bar-value" x="${labelX.toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle">${fmtTps(value)}</text>
+        <text class="bar-label" x="${labelX.toFixed(1)}" y="${(padT + innerH + 16).toFixed(1)}" text-anchor="middle">${escapeXml(d.name)}</text>
+      `;
+    }).join('');
+
+    const targetY = yFromValue(target);
+    const targetLine = `
+      <line class="target-line" x1="${padL}" y1="${targetY.toFixed(1)}" x2="${(W - padR).toFixed(1)}" y2="${targetY.toFixed(1)}" />
+      <text class="target-label" x="${(W - padR).toFixed(1)}" y="${(targetY - 4).toFixed(1)}" text-anchor="end">target ${target} tok/s</text>
+    `;
+
+    chartEl.innerHTML =
+      `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">` +
+      targetLine + bars +
+      `</svg>`;
   }
 
   function renderVerdict({ model, hw, target, effectiveTops, bandwidthCeiling, totalBytes }) {

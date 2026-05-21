@@ -181,6 +181,37 @@
     };
   }
 
+  // --- comparison chart -----------------------------------------------------
+  // Model picks that span the common size range users care about. Names must
+  // match entries in MODELS; if any is missing (e.g. preset list was edited)
+  // it is silently dropped.
+  const CHART_MODEL_NAMES = [
+    'Llama 3.2 1B',
+    'Llama 3.2 3B',
+    'Llama 3.1 / 3 8B',
+    'Mistral 7B',
+    'Mixtral 8x7B (MoE)',
+    'Llama 3.3 / 3.1 70B',
+  ];
+
+  // Returns the data needed to render the bar chart: one entry per model with
+  // its bandwidth ceiling on the given hardware and a verdict class against
+  // the target.
+  function buildComparison({ hw, quantBits, target }) {
+    if (!hw || !hw.bandwidth) return [];
+    return CHART_MODEL_NAMES
+      .map((name) => MODELS.find((m) => m.name === name))
+      .filter(Boolean)
+      .map((m) => {
+        const bytes = computeWeightsBytes(m.active, quantBits);
+        const ceiling = computeBandwidthCeiling(hw.bandwidth, bytes);
+        let verdict = 'bad';
+        if (ceiling >= target) verdict = 'good';
+        else if (ceiling >= target * 0.5) verdict = 'warn';
+        return { name: m.name, ceiling, verdict };
+      });
+  }
+
   // --- formatters -----------------------------------------------------------
   function fmtGB(bytes) {
     const gb = bytes / 1e9;
@@ -216,6 +247,8 @@
     classifyVerdict,
     encodeStateToUrl,
     decodeStateFromUrl,
+    buildComparison,
+    CHART_MODEL_NAMES,
     fmtGB,
     fmtTops,
     fmtTps,

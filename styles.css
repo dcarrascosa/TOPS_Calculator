@@ -237,6 +237,39 @@ main {
   font-weight: 500;
 }
 
+.chart-help {
+  color: var(--text-dim);
+  font-size: 13.5px;
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+
+.chart {
+  width: 100%;
+}
+
+.chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.chart .bar.good   { fill: var(--good); }
+.chart .bar.warn   { fill: var(--warn); }
+.chart .bar.bad    { fill: var(--bad); }
+.chart .bar-label  { fill: var(--text-dim); font-size: 11px; font-family: inherit; }
+.chart .bar-value  { fill: var(--text); font-size: 11px; font-family: inherit; font-weight: 600; }
+.chart .target-line {
+  stroke: var(--text-dim);
+  stroke-dasharray: 4 4;
+  stroke-width: 1;
+}
+.chart .target-label {
+  fill: var(--text-dim);
+  font-size: 11px;
+  font-family: inherit;
+}
+
 .explainer p {
   color: var(--text-dim);
   font-size: 14.5px;
