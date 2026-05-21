@@ -28,7 +28,9 @@ Built specifically to answer the question: **are 38–50 TOPS enough for profess
 
 ## How to run it
 
-It's pure HTML + CSS + JS. No build step. Just open it.
+**Live demo:** [dcarrascosa.github.io/tops_calculator](https://dcarrascosa.github.io/tops_calculator/) — auto-deployed from `main` on every merge.
+
+To run it locally — it's pure HTML + CSS + JS. No build step. Just open it.
 
 1. Clone the repo.
 2. Double-click `index.html`.
