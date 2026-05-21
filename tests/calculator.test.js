@@ -1,28 +1,27 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
+const { test, expect } = require('bun:test');
 const C = require('../calculator.js');
 
 // ---------------------------------------------------------------------------
 // bytesForQuant
 // ---------------------------------------------------------------------------
 test('bytesForQuant returns 2 for FP16', () => {
-  assert.equal(C.bytesForQuant(16), 2);
+  expect(C.bytesForQuant(16)).toBe(2);
 });
 
 test('bytesForQuant returns 1 for INT8', () => {
-  assert.equal(C.bytesForQuant(8), 1);
+  expect(C.bytesForQuant(8)).toBe(1);
 });
 
 test('bytesForQuant returns 0.5 for INT4', () => {
-  assert.equal(C.bytesForQuant(4), 0.5);
+  expect(C.bytesForQuant(4)).toBe(0.5);
 });
 
 test('bytesForQuant returns 0.4 for INT3 (with overhead)', () => {
-  assert.equal(C.bytesForQuant(3), 0.4);
+  expect(C.bytesForQuant(3)).toBe(0.4);
 });
 
 test('bytesForQuant returns 0.3 for INT2 (with overhead)', () => {
-  assert.equal(C.bytesForQuant(2), 0.3);
+  expect(C.bytesForQuant(2)).toBe(0.3);
 });
 
 // ---------------------------------------------------------------------------
@@ -30,24 +29,25 @@ test('bytesForQuant returns 0.3 for INT2 (with overhead)', () => {
 // ---------------------------------------------------------------------------
 test('Llama 3 8B at Q4 needs ~4 GB of weights', () => {
   const bytes = C.computeWeightsBytes(8.03, 4);
-  assert.ok(Math.abs(bytes - 8.03e9 * 0.5) < 1, `expected ~${8.03e9 * 0.5}, got ${bytes}`);
+  expect(Math.abs(bytes - 8.03e9 * 0.5)).toBeLessThan(1);
 });
 
 test('Llama 3 70B at Q4 needs ~35 GB of weights', () => {
   const bytes = C.computeWeightsBytes(70.6, 4);
-  assert.ok(bytes > 35e9 && bytes < 36e9, `expected ~35 GB, got ${bytes}`);
+  expect(bytes).toBeGreaterThan(35e9);
+  expect(bytes).toBeLessThan(36e9);
 });
 
 test('weights scale linearly with parameter count', () => {
   const a = C.computeWeightsBytes(1, 4);
   const b = C.computeWeightsBytes(10, 4);
-  assert.equal(b, a * 10);
+  expect(b).toBe(a * 10);
 });
 
 test('FP16 weights are 4x larger than Q4 weights', () => {
   const fp16 = C.computeWeightsBytes(8, 16);
   const q4   = C.computeWeightsBytes(8, 4);
-  assert.equal(fp16, q4 * 4);
+  expect(fp16).toBe(q4 * 4);
 });
 
 // ---------------------------------------------------------------------------
@@ -56,13 +56,13 @@ test('FP16 weights are 4x larger than Q4 weights', () => {
 test('KV cache for Llama 3 8B @ 8k context is about 1 GB', () => {
   const bytes = C.computeKvBytes(32, 8, 128, 8192);
   // 2 * 32 * 8 * 128 * 8192 * 2 = 1,073,741,824
-  assert.equal(bytes, 1073741824);
+  expect(bytes).toBe(1073741824);
 });
 
 test('KV cache scales linearly with context length', () => {
   const small = C.computeKvBytes(32, 8, 128, 1024);
   const big   = C.computeKvBytes(32, 8, 128, 8192);
-  assert.equal(big, small * 8);
+  expect(big).toBe(small * 8);
 });
 
 // ---------------------------------------------------------------------------
@@ -70,13 +70,13 @@ test('KV cache scales linearly with context length', () => {
 // ---------------------------------------------------------------------------
 test('raw ops = 2 × active params × tokens/sec', () => {
   // 8B params × 20 t/s = 2 × 8e9 × 20 = 3.2e11
-  assert.equal(C.computeRawOps(8, 20), 3.2e11);
+  expect(C.computeRawOps(8, 20)).toBe(3.2e11);
 });
 
 test('raw ops scales linearly with tokens/sec', () => {
   const a = C.computeRawOps(7, 10);
   const b = C.computeRawOps(7, 20);
-  assert.equal(b, a * 2);
+  expect(b).toBe(a * 2);
 });
 
 // ---------------------------------------------------------------------------
@@ -86,22 +86,23 @@ test('bandwidth ceiling matches the M4 + Llama 3 8B Q4 reference', () => {
   // 120 GB/s × 0.7 = 84 GB/s effective. weights = 4.015 GB. ceiling = ~20.9 t/s.
   const weights = C.computeWeightsBytes(8.03, 4);
   const ceiling = C.computeBandwidthCeiling(120, weights);
-  assert.ok(ceiling > 20 && ceiling < 22, `expected ~21 t/s, got ${ceiling}`);
+  expect(ceiling).toBeGreaterThan(20);
+  expect(ceiling).toBeLessThan(22);
 });
 
 test('bandwidth ceiling is null when bandwidth is missing', () => {
-  assert.equal(C.computeBandwidthCeiling(null, 1e9), null);
-  assert.equal(C.computeBandwidthCeiling(0, 1e9), null);
+  expect(C.computeBandwidthCeiling(null, 1e9)).toBeNull();
+  expect(C.computeBandwidthCeiling(0, 1e9)).toBeNull();
 });
 
 test('bandwidth ceiling is null when bytes streamed is zero', () => {
-  assert.equal(C.computeBandwidthCeiling(120, 0), null);
+  expect(C.computeBandwidthCeiling(120, 0)).toBeNull();
 });
 
 test('bandwidth ceiling scales linearly with bandwidth', () => {
   const a = C.computeBandwidthCeiling(120, 4e9);
   const b = C.computeBandwidthCeiling(240, 4e9);
-  assert.equal(b, a * 2);
+  expect(b).toBe(a * 2);
 });
 
 // ---------------------------------------------------------------------------
@@ -109,7 +110,6 @@ test('bandwidth ceiling scales linearly with bandwidth', () => {
 // ---------------------------------------------------------------------------
 const llama8b = C.MODELS.find((m) => m.name.startsWith('Llama 3.1 / 3 8B'));
 const mixtral = C.MODELS.find((m) => m.name.startsWith('Mixtral'));
-const m4      = C.HARDWARE.find((h) => h.name === 'Apple M1' /* dummy first lookup */);
 const m4real  = C.HARDWARE.find((h) => h.name === 'Apple M4');
 const m4Max   = C.HARDWARE.find((h) => h.name === 'Apple M4 Max');
 
@@ -124,15 +124,20 @@ test('full compute: Llama 3 8B Q4 @ 20 t/s on M4 matches reference', () => {
   });
 
   // raw TOPS ~ 0.321
-  assert.ok(r.rawTops > 0.3 && r.rawTops < 0.35, `rawTops=${r.rawTops}`);
+  expect(r.rawTops).toBeGreaterThan(0.3);
+  expect(r.rawTops).toBeLessThan(0.35);
   // effective TOPS ~ 1.28
-  assert.ok(r.effectiveTops > 1.2 && r.effectiveTops < 1.35, `effTops=${r.effectiveTops}`);
+  expect(r.effectiveTops).toBeGreaterThan(1.2);
+  expect(r.effectiveTops).toBeLessThan(1.35);
   // weights ~ 4 GB
-  assert.ok(r.weightsBytes > 3.9e9 && r.weightsBytes < 4.1e9);
+  expect(r.weightsBytes).toBeGreaterThan(3.9e9);
+  expect(r.weightsBytes).toBeLessThan(4.1e9);
   // kv ~ 1 GB
-  assert.ok(r.kvBytes > 1e9 && r.kvBytes < 1.2e9);
+  expect(r.kvBytes).toBeGreaterThan(1e9);
+  expect(r.kvBytes).toBeLessThan(1.2e9);
   // bandwidth ceiling ~ 21 t/s
-  assert.ok(r.bandwidthCeiling > 20 && r.bandwidthCeiling < 22);
+  expect(r.bandwidthCeiling).toBeGreaterThan(20);
+  expect(r.bandwidthCeiling).toBeLessThan(22);
 });
 
 test('full compute: MoE uses active params for compute and bandwidth, total for memory', () => {
@@ -146,11 +151,14 @@ test('full compute: MoE uses active params for compute and bandwidth, total for 
   });
 
   // memory uses total (46.7B), so weights ~ 23.35 GB
-  assert.ok(r.weightsBytes > 23e9 && r.weightsBytes < 24e9, `weights=${r.weightsBytes}`);
+  expect(r.weightsBytes).toBeGreaterThan(23e9);
+  expect(r.weightsBytes).toBeLessThan(24e9);
   // compute uses active (12.9B): raw = 2 × 12.9e9 × 20 / 1e12 = 0.516 TOPS
-  assert.ok(r.rawTops > 0.5 && r.rawTops < 0.53, `rawTops=${r.rawTops}`);
+  expect(r.rawTops).toBeGreaterThan(0.5);
+  expect(r.rawTops).toBeLessThan(0.53);
   // bandwidth ceiling uses active (12.9B Q4 = 6.45 GB streamed): 546*0.7/6.45 ≈ 59 t/s
-  assert.ok(r.bandwidthCeiling > 55 && r.bandwidthCeiling < 65, `ceiling=${r.bandwidthCeiling}`);
+  expect(r.bandwidthCeiling).toBeGreaterThan(55);
+  expect(r.bandwidthCeiling).toBeLessThan(65);
 });
 
 test('compute returns null bandwidth ceiling when hardware has none', () => {
@@ -162,7 +170,7 @@ test('compute returns null bandwidth ceiling when hardware has none', () => {
     context: 8192,
     efficiency: 0.25,
   });
-  assert.equal(r.bandwidthCeiling, null);
+  expect(r.bandwidthCeiling).toBeNull();
 });
 
 // ---------------------------------------------------------------------------
@@ -175,7 +183,7 @@ test('classifyVerdict: good when both compute and bandwidth suffice', () => {
     target: 20,
     hw: { tops: 38, bandwidth: 120 },
   });
-  assert.equal(v, 'good');
+  expect(v).toBe('good');
 });
 
 test('classifyVerdict: warn when bandwidth is the bottleneck', () => {
@@ -185,7 +193,7 @@ test('classifyVerdict: warn when bandwidth is the bottleneck', () => {
     target: 20,
     hw: { tops: 38, bandwidth: 120 },
   });
-  assert.equal(v, 'warn');
+  expect(v).toBe('warn');
 });
 
 test('classifyVerdict: warn when compute is the bottleneck', () => {
@@ -195,7 +203,7 @@ test('classifyVerdict: warn when compute is the bottleneck', () => {
     target: 20,
     hw: { tops: 38, bandwidth: 120 },
   });
-  assert.equal(v, 'warn');
+  expect(v).toBe('warn');
 });
 
 test('classifyVerdict: bad when neither is enough', () => {
@@ -205,7 +213,7 @@ test('classifyVerdict: bad when neither is enough', () => {
     target: 20,
     hw: { tops: 38, bandwidth: 120 },
   });
-  assert.equal(v, 'bad');
+  expect(v).toBe('bad');
 });
 
 test('classifyVerdict: unknown when hardware is missing values', () => {
@@ -215,48 +223,48 @@ test('classifyVerdict: unknown when hardware is missing values', () => {
     target: 20,
     hw: { tops: null, bandwidth: null },
   });
-  assert.equal(v, 'unknown');
+  expect(v).toBe('unknown');
 });
 
 // ---------------------------------------------------------------------------
 // formatters
 // ---------------------------------------------------------------------------
 test('fmtGB switches to MB below 1 GB', () => {
-  assert.equal(C.fmtGB(500e6), '500 MB');
+  expect(C.fmtGB(500e6)).toBe('500 MB');
 });
 
 test('fmtGB shows 2 decimals between 1 and 10 GB', () => {
-  assert.equal(C.fmtGB(4.02e9), '4.02 GB');
+  expect(C.fmtGB(4.02e9)).toBe('4.02 GB');
 });
 
 test('fmtGB shows 1 decimal at 10 GB and above', () => {
-  assert.equal(C.fmtGB(35.3e9), '35.3 GB');
+  expect(C.fmtGB(35.3e9)).toBe('35.3 GB');
 });
 
 test('fmtTops shows GOPS below 0.01 TOPS', () => {
-  assert.equal(C.fmtTops(0.005), '5.00 GOPS');
+  expect(C.fmtTops(0.005)).toBe('5.00 GOPS');
 });
 
 test('fmtTops shows 2 decimals below 1 TOPS', () => {
-  assert.equal(C.fmtTops(0.32), '0.32 TOPS');
+  expect(C.fmtTops(0.32)).toBe('0.32 TOPS');
 });
 
 test('fmtTops shows 1 decimal at 1 TOPS and above', () => {
-  assert.equal(C.fmtTops(38), '38.0 TOPS');
+  expect(C.fmtTops(38)).toBe('38.0 TOPS');
 });
 
 test('fmtTps returns em dash for non-finite values', () => {
-  assert.equal(C.fmtTps(Infinity), '—');
-  assert.equal(C.fmtTps(NaN), '—');
-  assert.equal(C.fmtTps(null), '—');
+  expect(C.fmtTps(Infinity)).toBe('—');
+  expect(C.fmtTps(NaN)).toBe('—');
+  expect(C.fmtTps(null)).toBe('—');
 });
 
 test('fmtTps shows 1 decimal below 10 tok/s', () => {
-  assert.equal(C.fmtTps(5.4), '5.4 tok/s');
+  expect(C.fmtTps(5.4)).toBe('5.4 tok/s');
 });
 
 test('fmtTps rounds at 10 tok/s and above', () => {
-  assert.equal(C.fmtTps(20.6), '21 tok/s');
+  expect(C.fmtTps(20.6)).toBe('21 tok/s');
 });
 
 // ---------------------------------------------------------------------------
@@ -265,26 +273,26 @@ test('fmtTps rounds at 10 tok/s and above', () => {
 test('every non-custom model has positive params and architecture fields', () => {
   for (const m of C.MODELS) {
     if (m.custom) continue;
-    assert.ok(m.params > 0,   `${m.name} params`);
-    assert.ok(m.active > 0,   `${m.name} active`);
-    assert.ok(m.active <= m.params, `${m.name}: active should not exceed total`);
-    assert.ok(m.layers > 0,   `${m.name} layers`);
-    assert.ok(m.kvHeads > 0,  `${m.name} kvHeads`);
-    assert.ok(m.headDim > 0,  `${m.name} headDim`);
+    expect(m.params).toBeGreaterThan(0);
+    expect(m.active).toBeGreaterThan(0);
+    expect(m.active).toBeLessThanOrEqual(m.params);
+    expect(m.layers).toBeGreaterThan(0);
+    expect(m.kvHeads).toBeGreaterThan(0);
+    expect(m.headDim).toBeGreaterThan(0);
   }
 });
 
 test('every non-custom hardware preset has positive TOPS and bandwidth', () => {
   for (const h of C.HARDWARE) {
     if (h.custom) continue;
-    assert.ok(h.tops > 0,      `${h.name} tops`);
-    assert.ok(h.bandwidth > 0, `${h.name} bandwidth`);
+    expect(h.tops).toBeGreaterThan(0);
+    expect(h.bandwidth).toBeGreaterThan(0);
   }
 });
 
 test('M4 family is rated at 38 TOPS (the number the user asked about)', () => {
   for (const name of ['Apple M4', 'Apple M4 Pro', 'Apple M4 Max']) {
     const h = C.HARDWARE.find((x) => x.name === name);
-    assert.equal(h.tops, 38, `${name} should be 38 TOPS`);
+    expect(h.tops).toBe(38);
   }
 });
