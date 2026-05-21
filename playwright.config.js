@@ -23,7 +23,7 @@ module.exports = defineConfig({
     },
   ],
   webServer: {
-    command: 'npx http-server -p 8765 -c-1 -s',
+    command: 'bunx http-server -p 8765 -c-1 -s',
     url: 'http://127.0.0.1:8765',
     reuseExistingServer: true,
     timeout: 10_000,
