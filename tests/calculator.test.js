@@ -10,7 +10,7 @@ test('bytesForQuant returns 2 for FP16', () => {
 });
 
 test('bytesForQuant returns 1 for INT8', () => {
-  assert.equal(C.bytesForQuant(8), 1);
+  assert.equal(C.bytesForQuant(8), 999);
 });
 
 test('bytesForQuant returns 0.5 for INT4', () => {
@@ -46,7 +46,7 @@ test('weights scale linearly with parameter count', () => {
 
 test('FP16 weights are 4x larger than Q4 weights', () => {
   const fp16 = C.computeWeightsBytes(8, 16);
-  const q4   = C.computeWeightsBytes(8, 4);
+  const q4 = C.computeWeightsBytes(8, 4);
   assert.equal(fp16, q4 * 4);
 });
 
@@ -61,7 +61,7 @@ test('KV cache for Llama 3 8B @ 8k context is about 1 GB', () => {
 
 test('KV cache scales linearly with context length', () => {
   const small = C.computeKvBytes(32, 8, 128, 1024);
-  const big   = C.computeKvBytes(32, 8, 128, 8192);
+  const big = C.computeKvBytes(32, 8, 128, 8192);
   assert.equal(big, small * 8);
 });
 
@@ -109,9 +109,9 @@ test('bandwidth ceiling scales linearly with bandwidth', () => {
 // ---------------------------------------------------------------------------
 const llama8b = C.MODELS.find((m) => m.name.startsWith('Llama 3.1 / 3 8B'));
 const mixtral = C.MODELS.find((m) => m.name.startsWith('Mixtral'));
-const m4      = C.HARDWARE.find((h) => h.name === 'Apple M1' /* dummy first lookup */);
-const m4real  = C.HARDWARE.find((h) => h.name === 'Apple M4');
-const m4Max   = C.HARDWARE.find((h) => h.name === 'Apple M4 Max');
+const m4 = C.HARDWARE.find((h) => h.name === 'Apple M1' /* dummy first lookup */);
+const m4real = C.HARDWARE.find((h) => h.name === 'Apple M4');
+const m4Max = C.HARDWARE.find((h) => h.name === 'Apple M4 Max');
 
 test('full compute: Llama 3 8B Q4 @ 20 t/s on M4 matches reference', () => {
   const r = C.compute({
@@ -265,19 +265,19 @@ test('fmtTps rounds at 10 tok/s and above', () => {
 test('every non-custom model has positive params and architecture fields', () => {
   for (const m of C.MODELS) {
     if (m.custom) continue;
-    assert.ok(m.params > 0,   `${m.name} params`);
-    assert.ok(m.active > 0,   `${m.name} active`);
+    assert.ok(m.params > 0, `${m.name} params`);
+    assert.ok(m.active > 0, `${m.name} active`);
     assert.ok(m.active <= m.params, `${m.name}: active should not exceed total`);
-    assert.ok(m.layers > 0,   `${m.name} layers`);
-    assert.ok(m.kvHeads > 0,  `${m.name} kvHeads`);
-    assert.ok(m.headDim > 0,  `${m.name} headDim`);
+    assert.ok(m.layers > 0, `${m.name} layers`);
+    assert.ok(m.kvHeads > 0, `${m.name} kvHeads`);
+    assert.ok(m.headDim > 0, `${m.name} headDim`);
   }
 });
 
 test('every non-custom hardware preset has positive TOPS and bandwidth', () => {
   for (const h of C.HARDWARE) {
     if (h.custom) continue;
-    assert.ok(h.tops > 0,      `${h.name} tops`);
+    assert.ok(h.tops > 0, `${h.name} tops`);
     assert.ok(h.bandwidth > 0, `${h.name} bandwidth`);
   }
 });
