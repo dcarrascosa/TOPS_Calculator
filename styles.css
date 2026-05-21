@@ -342,6 +342,24 @@ main {
   color: var(--text-dim);
 }
 
+.foot p {
+  margin: 0 0 6px;
+}
+
+.foot p:last-child {
+  margin-bottom: 0;
+}
+
+.foot .credit {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.foot .credit strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
 .foot a {
   color: var(--accent);
   text-decoration: none;
