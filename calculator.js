@@ -212,6 +212,40 @@
       });
   }
 
+  // --- markdown export ------------------------------------------------------
+  // Builds a markdown snippet summarizing the current state and computed
+  // results. Pure function — no DOM.
+  function buildMarkdownReport({ model, hw, target, quantBits, context, efficiency }, result) {
+    const quantLabel = quantBits === 16 ? 'FP16' : `${quantBits}-bit`;
+    const contextLabel = context >= 1024 ? `${Math.round(context / 1024)}k` : String(context);
+    const effLabel = `${Math.round(efficiency * 100)}%`;
+    const ceilingLabel = result.bandwidthCeiling != null ? fmtTps(result.bandwidthCeiling) : 'n/a';
+    const hwLabel = hw.tops != null && hw.bandwidth != null
+      ? `${hw.name} (${hw.tops} TOPS, ${hw.bandwidth} GB/s)`
+      : hw.name;
+
+    return [
+      `**LLM TOPS Calculator** — ${model.name} on ${hwLabel}`,
+      '',
+      '| Setting | Value |',
+      '|---|---|',
+      `| Quantization | ${quantLabel} |`,
+      `| Target tokens/sec | ${target} |`,
+      `| Context | ${contextLabel} |`,
+      `| Real-world efficiency | ${effLabel} |`,
+      '',
+      '| Result | Value |',
+      '|---|---|',
+      `| Required raw TOPS | ${fmtTops(result.rawTops)} |`,
+      `| Required effective TOPS | ${fmtTops(result.effectiveTops)} |`,
+      `| Weights memory | ${fmtGB(result.weightsBytes)} |`,
+      `| KV cache memory | ${fmtGB(result.kvBytes)} |`,
+      `| Total memory | ${fmtGB(result.totalBytes)} |`,
+      `| Bandwidth ceiling (batch=1) | ${ceilingLabel} |`,
+      '',
+    ].join('\n');
+  }
+
   // --- formatters -----------------------------------------------------------
   function fmtGB(bytes) {
     const gb = bytes / 1e9;
@@ -249,6 +283,7 @@
     decodeStateFromUrl,
     buildComparison,
     CHART_MODEL_NAMES,
+    buildMarkdownReport,
     fmtGB,
     fmtTops,
     fmtTps,

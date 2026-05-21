@@ -7,6 +7,7 @@
     MODELS, HARDWARE, compute, classifyVerdict,
     encodeStateToUrl, decodeStateFromUrl,
     buildComparison,
+    buildMarkdownReport,
     fmtGB, fmtTops, fmtTps,
   } = C;
 
@@ -38,6 +39,12 @@
   const shareBtn     = document.getElementById('shareBtn');
   const shareFeedback= document.getElementById('shareFeedback');
   const chartEl      = document.getElementById('chart');
+  const copyMdBtn       = document.getElementById('copyMarkdownBtn');
+  const downloadMdBtn   = document.getElementById('downloadMarkdownBtn');
+  const exportFeedback  = document.getElementById('exportFeedback');
+
+  let lastView = null;
+  let lastResult = null;
 
   // --- populate selects -----------------------------------------------------
   function populate() {
@@ -123,6 +130,9 @@
 
     syncUrl({ model, hw, target, quantBits, context, efficiency });
     renderChart({ hw, quantBits, target });
+
+    lastView = { model, hw, target, quantBits, context, efficiency };
+    lastResult = r;
   }
 
   // --- url sync -------------------------------------------------------------
@@ -235,6 +245,38 @@
       `</svg>`;
   }
 
+  // --- markdown export ------------------------------------------------------
+  function showExportFeedback(text) {
+    exportFeedback.textContent = text;
+    setTimeout(() => { exportFeedback.textContent = ''; }, 2500);
+  }
+
+  async function copyMarkdown() {
+    if (!lastView || !lastResult) return;
+    const md = buildMarkdownReport(lastView, lastResult);
+    try {
+      await navigator.clipboard.writeText(md);
+      showExportFeedback('Markdown copied');
+    } catch {
+      showExportFeedback('Copy failed');
+    }
+  }
+
+  function downloadMarkdown() {
+    if (!lastView || !lastResult) return;
+    const md = buildMarkdownReport(lastView, lastResult);
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'tops-calculator-report.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showExportFeedback('Downloaded');
+  }
+
   function renderVerdict({ model, hw, target, effectiveTops, bandwidthCeiling, totalBytes }) {
     const cls = classifyVerdict({ effectiveTops, bandwidthCeiling, target, hw });
     const memGB = totalBytes / 1e9;
@@ -302,6 +344,8 @@
     });
 
     shareBtn.addEventListener('click', copyShareLink);
+    copyMdBtn.addEventListener('click', copyMarkdown);
+    downloadMdBtn.addEventListener('click', downloadMarkdown);
   }
 
   init();

@@ -457,3 +457,44 @@ test('buildComparison returns [] when hardware has no bandwidth', () => {
   });
   expect(data).toEqual([]);
 });
+
+// ---------------------------------------------------------------------------
+// buildMarkdownReport
+// ---------------------------------------------------------------------------
+test('buildMarkdownReport returns markdown with model name and computed metrics', () => {
+  const m = C.MODELS.find((x) => x.name.startsWith('Llama 3.1 / 3 8B'));
+  const h = C.HARDWARE.find((x) => x.name === 'Apple M4');
+  const view = { model: m, hw: h, target: 20, quantBits: 4, context: 8192, efficiency: 0.25 };
+  const result = C.compute(view);
+  const md = C.buildMarkdownReport(view, result);
+
+  expect(md).toContain('Llama 3.1 / 3 8B');
+  expect(md).toContain('Apple M4');
+  expect(md).toContain('4-bit');
+  expect(md).toContain('8k');
+  expect(md).toContain('25%');
+  expect(md).toContain('Weights memory');
+  expect(md).toContain('Bandwidth ceiling');
+});
+
+test('buildMarkdownReport formats FP16 quantization correctly', () => {
+  const m = C.MODELS.find((x) => x.name.startsWith('Llama 3.1 / 3 8B'));
+  const h = C.HARDWARE.find((x) => x.name === 'Apple M4');
+  const view = { model: m, hw: h, target: 20, quantBits: 16, context: 4096, efficiency: 0.4 };
+  const md = C.buildMarkdownReport(view, C.compute(view));
+  expect(md).toContain('FP16');
+  expect(md).toContain('4k');
+  expect(md).toContain('40%');
+});
+
+test('buildMarkdownReport handles missing hardware gracefully', () => {
+  const m = C.MODELS.find((x) => x.name.startsWith('Llama 3.1 / 3 8B'));
+  const view = {
+    model: m,
+    hw: { name: 'Custom', tops: null, bandwidth: null },
+    target: 20, quantBits: 4, context: 8192, efficiency: 0.25,
+  };
+  const md = C.buildMarkdownReport(view, C.compute(view));
+  expect(md).toContain('Custom');
+  expect(md).toContain('n/a');
+});

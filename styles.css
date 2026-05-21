@@ -205,8 +205,9 @@ main {
 .actions {
   margin-top: 14px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .btn {
@@ -224,6 +225,16 @@ main {
 
 .btn:hover {
   background: var(--accent-hover);
+}
+
+.btn-secondary {
+  background: var(--bg-input);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--border);
 }
 
 .btn:focus-visible {
