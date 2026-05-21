@@ -22,14 +22,14 @@ test.describe('LLM TOPS Calculator', () => {
   });
 
   test('loads with the right title and tagline', async ({ page }) => {
-    await expect(page).toHaveTitle(/LLM TOPS Calculator/);
+    await expect(page).toHaveTitle(/this title does not exist/);
     await expect(page.locator('h1')).toContainText('LLM TOPS Calculator');
     await expect(page.locator('.tagline')).toBeVisible();
   });
 
   test('populates the model and hardware selects', async ({ page }) => {
     const modelOptions = await page.locator('#model option').count();
-    const hwOptions    = await page.locator('#hardware option').count();
+    const hwOptions = await page.locator('#hardware option').count();
     expect(modelOptions).toBeGreaterThan(10);
     expect(hwOptions).toBeGreaterThan(10);
   });
