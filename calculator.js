@@ -41,22 +41,45 @@
   ];
 
   // --- hardware presets -----------------------------------------------------
+  // TOPS values are INT8 published peak (dense, no sparsity gains) where
+  // available. Bandwidth is unified memory or VRAM peak. The `group` field
+  // drives the <optgroup> in the dropdown.
   const HARDWARE = [
-    { name: 'Apple M1',         tops: 11,   bandwidth: 68.25 },
-    { name: 'Apple M1 Pro',     tops: 11,   bandwidth: 200 },
-    { name: 'Apple M1 Max',     tops: 11,   bandwidth: 400 },
-    { name: 'Apple M1 Ultra',   tops: 22,   bandwidth: 800 },
-    { name: 'Apple M2',         tops: 15.8, bandwidth: 100 },
-    { name: 'Apple M2 Pro',     tops: 15.8, bandwidth: 200 },
-    { name: 'Apple M2 Max',     tops: 15.8, bandwidth: 400 },
-    { name: 'Apple M2 Ultra',   tops: 31.6, bandwidth: 800 },
-    { name: 'Apple M3',         tops: 18,   bandwidth: 100 },
-    { name: 'Apple M3 Pro',     tops: 18,   bandwidth: 150 },
-    { name: 'Apple M3 Max',     tops: 18,   bandwidth: 400 },
-    { name: 'Apple M4',         tops: 38,   bandwidth: 120 },
-    { name: 'Apple M4 Pro',     tops: 38,   bandwidth: 273 },
-    { name: 'Apple M4 Max',     tops: 38,   bandwidth: 546 },
-    { name: 'Custom…',          custom: true },
+    { group: 'Apple Silicon',     name: 'Apple M1',                       tops: 11,   bandwidth: 68.25 },
+    { group: 'Apple Silicon',     name: 'Apple M1 Pro',                   tops: 11,   bandwidth: 200  },
+    { group: 'Apple Silicon',     name: 'Apple M1 Max',                   tops: 11,   bandwidth: 400  },
+    { group: 'Apple Silicon',     name: 'Apple M1 Ultra',                 tops: 22,   bandwidth: 800  },
+    { group: 'Apple Silicon',     name: 'Apple M2',                       tops: 15.8, bandwidth: 100  },
+    { group: 'Apple Silicon',     name: 'Apple M2 Pro',                   tops: 15.8, bandwidth: 200  },
+    { group: 'Apple Silicon',     name: 'Apple M2 Max',                   tops: 15.8, bandwidth: 400  },
+    { group: 'Apple Silicon',     name: 'Apple M2 Ultra',                 tops: 31.6, bandwidth: 800  },
+    { group: 'Apple Silicon',     name: 'Apple M3',                       tops: 18,   bandwidth: 100  },
+    { group: 'Apple Silicon',     name: 'Apple M3 Pro',                   tops: 18,   bandwidth: 150  },
+    { group: 'Apple Silicon',     name: 'Apple M3 Max',                   tops: 18,   bandwidth: 400  },
+    { group: 'Apple Silicon',     name: 'Apple M4',                       tops: 38,   bandwidth: 120  },
+    { group: 'Apple Silicon',     name: 'Apple M4 Pro',                   tops: 38,   bandwidth: 273  },
+    { group: 'Apple Silicon',     name: 'Apple M4 Max',                   tops: 38,   bandwidth: 546  },
+
+    { group: 'NVIDIA GeForce',    name: 'NVIDIA RTX 3060 12GB',           tops: 52,   bandwidth: 360  },
+    { group: 'NVIDIA GeForce',    name: 'NVIDIA RTX 3090 24GB',           tops: 142,  bandwidth: 936  },
+    { group: 'NVIDIA GeForce',    name: 'NVIDIA RTX 4060 8GB',            tops: 121,  bandwidth: 272  },
+    { group: 'NVIDIA GeForce',    name: 'NVIDIA RTX 4070 12GB',           tops: 233,  bandwidth: 504  },
+    { group: 'NVIDIA GeForce',    name: 'NVIDIA RTX 4080 16GB',           tops: 390,  bandwidth: 717  },
+    { group: 'NVIDIA GeForce',    name: 'NVIDIA RTX 4090 24GB',           tops: 660,  bandwidth: 1008 },
+    { group: 'NVIDIA GeForce',    name: 'NVIDIA RTX 5090 32GB',           tops: 1676, bandwidth: 1792 },
+
+    { group: 'NVIDIA Datacenter', name: 'NVIDIA A100 80GB',               tops: 624,  bandwidth: 2039 },
+    { group: 'NVIDIA Datacenter', name: 'NVIDIA H100 80GB',               tops: 1979, bandwidth: 3350 },
+
+    { group: 'AMD Radeon',        name: 'AMD Radeon RX 7900 XT 20GB',     tops: 103,  bandwidth: 800  },
+    { group: 'AMD Radeon',        name: 'AMD Radeon RX 7900 XTX 24GB',    tops: 123,  bandwidth: 960  },
+
+    { group: 'Copilot+ PC NPUs',  name: 'Qualcomm Snapdragon X Elite',    tops: 45,   bandwidth: 135  },
+    { group: 'Copilot+ PC NPUs',  name: 'Intel Core Ultra 200V (Lunar)',  tops: 48,   bandwidth: 136  },
+    { group: 'Copilot+ PC NPUs',  name: 'AMD Ryzen AI 9 HX 370 (Strix)',  tops: 50,   bandwidth: 136  },
+    { group: 'Copilot+ PC NPUs',  name: 'AMD Ryzen AI Max+ 395 (Halo)',   tops: 50,   bandwidth: 256  },
+
+    { name: 'Custom…',            custom: true },
   ];
 
   const BW_UTILIZATION = 0.7;     // realistic fraction of peak bandwidth used
