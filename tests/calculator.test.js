@@ -498,3 +498,45 @@ test('buildMarkdownReport handles missing hardware gracefully', () => {
   expect(md).toContain('Custom');
   expect(md).toContain('n/a');
 });
+
+// ---------------------------------------------------------------------------
+// i18n
+// ---------------------------------------------------------------------------
+test('translations are defined for en and es', () => {
+  expect(C.TRANSLATIONS.en).toBeDefined();
+  expect(C.TRANSLATIONS.es).toBeDefined();
+});
+
+test('every english key has a spanish counterpart and vice versa', () => {
+  const en = Object.keys(C.TRANSLATIONS.en).sort();
+  const es = Object.keys(C.TRANSLATIONS.es).sort();
+  expect(es).toEqual(en);
+});
+
+test('t() returns the english value for an english key', () => {
+  expect(C.t('inputs.model', 'en')).toBe('Model');
+});
+
+test('t() returns the spanish value for a spanish key', () => {
+  expect(C.t('inputs.model', 'es')).toBe('Modelo');
+});
+
+test('t() falls back to english when the language is unknown', () => {
+  expect(C.t('inputs.model', 'xx')).toBe('Model');
+});
+
+test('t() returns the key itself if the entry is missing', () => {
+  expect(C.t('does.not.exist', 'en')).toBe('does.not.exist');
+});
+
+test('t() interpolates {vars}', () => {
+  const out = C.t('verdict.good', 'en', {
+    hw: 'Apple M4', model: 'Llama 3', target: 20,
+    effTops: '1.3', hwTops: 38, ceiling: 21, memGB: '6.1',
+  });
+  expect(out).toContain('Apple M4');
+  expect(out).toContain('Llama 3');
+  expect(out).toContain('20 tok/s');
+  expect(out).not.toContain('{hw}');
+  expect(out).not.toContain('{model}');
+});

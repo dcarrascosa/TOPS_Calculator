@@ -193,6 +193,34 @@ test.describe('LLM TOPS Calculator', () => {
     expect(download.suggestedFilename()).toBe('tops-calculator-report.md');
   });
 
+  test('language toggle is present and starts on EN', async ({ page }) => {
+    await expect(page.locator('.lang-btn[data-lang="en"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.lang-btn[data-lang="es"]')).toHaveAttribute('aria-pressed', 'false');
+    await expect(page.locator('h1')).toContainText('LLM TOPS Calculator');
+    await expect(page.locator('.tagline')).toContainText('How many TOPS');
+  });
+
+  test('clicking ES switches UI text to Spanish and persists in localStorage', async ({ page }) => {
+    await page.click('.lang-btn[data-lang="es"]');
+    await expect(page.locator('.lang-btn[data-lang="es"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.tagline')).toContainText('Cuántos TOPS');
+    await expect(page.locator('label.field span[data-i18n="inputs.model"]')).toHaveText('Modelo');
+
+    const stored = await page.evaluate(() => localStorage.getItem('tops_calc_lang'));
+    expect(stored).toBe('es');
+
+    await page.reload();
+    await expect(page.locator('.lang-btn[data-lang="es"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('label.field span[data-i18n="inputs.model"]')).toHaveText('Modelo');
+  });
+
+  test('verdict text follows the selected language', async ({ page }) => {
+    await page.click('.lang-btn[data-lang="es"]');
+    await expect(page.locator('#verdict')).toContainText('puede con');
+    await page.click('.lang-btn[data-lang="en"]');
+    await expect(page.locator('#verdict')).toContainText('can handle');
+  });
+
   test('declares an inline svg favicon (no /favicon.ico 404)', async ({ page }) => {
     const requests404 = [];
     page.on('response', (res) => {

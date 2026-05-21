@@ -4,7 +4,7 @@
 (function () {
   const C = window.Calculator;
   const {
-    MODELS, HARDWARE, compute, classifyVerdict,
+    MODELS, HARDWARE, compute, classifyVerdict, t,
     encodeStateToUrl, decodeStateFromUrl,
     buildComparison,
     buildMarkdownReport,
@@ -12,6 +12,29 @@
   } = C;
 
   const TARGET_PRESETS = ['5', '10', '20', '30', '60'];
+
+  // --- language -------------------------------------------------------------
+  const LANG_KEY = 'tops_calc_lang';
+  let currentLang = localStorage.getItem(LANG_KEY) || 'en';
+
+  function applyTranslations(lang) {
+    currentLang = lang;
+    localStorage.setItem(LANG_KEY, lang);
+    document.documentElement.lang = lang;
+
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.getAttribute('data-i18n');
+      el.textContent = t(key, lang);
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach((el) => {
+      const key = el.getAttribute('data-i18n-html');
+      el.innerHTML = t(key, lang);
+    });
+    document.querySelectorAll('.lang-btn').forEach((btn) => {
+      const active = btn.dataset.lang === lang;
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+  }
 
   // --- DOM refs -------------------------------------------------------------
   const modelEl           = document.getElementById('model');
@@ -193,9 +216,9 @@
     const url = window.location.href;
     try {
       await navigator.clipboard.writeText(url);
-      shareFeedback.textContent = 'Link copied';
+      shareFeedback.textContent = t('feedback.linkCopied', currentLang);
     } catch {
-      shareFeedback.textContent = 'Copy failed — select the address bar';
+      shareFeedback.textContent = t('feedback.linkFailed', currentLang);
     }
     setTimeout(() => { shareFeedback.textContent = ''; }, 2500);
   }
@@ -204,7 +227,7 @@
   function renderChart({ hw, quantBits, target }) {
     const data = buildComparison({ hw, quantBits, target });
     if (!data.length) {
-      chartEl.innerHTML = '<p class="chart-help">Select a hardware preset to see the comparison.</p>';
+      chartEl.innerHTML = `<p class="chart-help">${t('chart.pickHw', currentLang)}</p>`;
       return;
     }
 
@@ -256,9 +279,9 @@
     const md = buildMarkdownReport(lastView, lastResult);
     try {
       await navigator.clipboard.writeText(md);
-      showExportFeedback('Markdown copied');
+      showExportFeedback(t('feedback.mdCopied', currentLang));
     } catch {
-      showExportFeedback('Copy failed');
+      showExportFeedback(t('feedback.mdFailed', currentLang));
     }
   }
 
@@ -274,45 +297,41 @@
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showExportFeedback('Downloaded');
+    showExportFeedback(t('feedback.downloaded', currentLang));
   }
 
   function renderVerdict({ model, hw, target, effectiveTops, bandwidthCeiling, totalBytes }) {
     const cls = classifyVerdict({ effectiveTops, bandwidthCeiling, target, hw });
     const memGB = totalBytes / 1e9;
-    let msg = '';
 
     if (cls === 'unknown') {
       verdictEl.className = 'verdict';
-      verdictEl.innerHTML = 'Enter custom TOPS and bandwidth to see a verdict.';
+      verdictEl.innerHTML = t('verdict.unknown', currentLang);
       return;
     }
 
-    if (cls === 'good') {
-      msg = `<strong>${hw.name} can handle ${model.name} at ${target} tok/s.</strong> ` +
-            `Required compute (${effectiveTops.toFixed(1)} TOPS) fits in ${hw.tops} TOPS, ` +
-            `and the bandwidth ceiling is ~${Math.round(bandwidthCeiling)} tok/s. ` +
-            `You'll need roughly ${memGB.toFixed(1)} GB of unified memory.`;
-    } else if (cls === 'warn' && bandwidthCeiling < target) {
-      msg = `<strong>Compute is fine, bandwidth is the limit.</strong> ` +
-            `Your ${hw.name} (${hw.bandwidth} GB/s) caps out around ${Math.round(bandwidthCeiling)} tok/s on this model — ` +
-            `below your ${target} tok/s target. Drop to a smaller / more quantized model, or pick a chip with more memory bandwidth (M4 Pro/Max).`;
-    } else if (cls === 'warn') {
-      msg = `<strong>Bandwidth is fine, but compute is tight.</strong> ` +
-            `${effectiveTops.toFixed(1)} effective TOPS needed vs ${hw.tops} available. ` +
-            `This is unusual for LLMs on Mac — it usually means your efficiency setting is conservative. ` +
-            `In practice, the bandwidth ceiling (~${Math.round(bandwidthCeiling)} tok/s) is what you'll observe.`;
-    } else {
-      msg = `<strong>Likely not enough.</strong> ` +
-            `Both compute (need ${effectiveTops.toFixed(1)} TOPS, have ${hw.tops}) and bandwidth ` +
-            `(~${Math.round(bandwidthCeiling)} tok/s ceiling vs ${target} target) fall short. ` +
-            `Try heavier quantization (4-bit → 3-bit), a smaller model, or a chip with more bandwidth.`;
-    }
+    const vars = {
+      model: model.name,
+      hw: hw.name,
+      hwTops: hw.tops,
+      hwBw: hw.bandwidth,
+      target,
+      effTops: effectiveTops.toFixed(1),
+      ceiling: Math.round(bandwidthCeiling),
+      memGB: memGB.toFixed(1),
+    };
 
+    let key;
+    if (cls === 'good') key = 'verdict.good';
+    else if (cls === 'warn' && bandwidthCeiling < target) key = 'verdict.warnBw';
+    else if (cls === 'warn') key = 'verdict.warnCompute';
+    else key = 'verdict.bad';
+
+    let msg = t(key, currentLang, vars);
     if (memGB > 64) {
-      msg += ` <em>Heads up: needs ${memGB.toFixed(0)} GB unified memory — only top-spec M-series configs ship with that much.</em>`;
+      msg += t('verdict.memBig', currentLang, { memGB: memGB.toFixed(0) });
     } else if (memGB > 32) {
-      msg += ` <em>Needs ${memGB.toFixed(0)} GB unified memory — pick a 36 GB+ config.</em>`;
+      msg += t('verdict.memMed', currentLang, { memGB: memGB.toFixed(0) });
     }
 
     verdictEl.className = 'verdict ' + cls;
@@ -330,6 +349,7 @@
 
   function init() {
     populate();
+    applyTranslations(currentLang);
     applyStateFromUrl();
     toggleCustomFields();
     render();
@@ -346,6 +366,13 @@
     shareBtn.addEventListener('click', copyShareLink);
     copyMdBtn.addEventListener('click', copyMarkdown);
     downloadMdBtn.addEventListener('click', downloadMarkdown);
+
+    document.querySelectorAll('.lang-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        applyTranslations(btn.dataset.lang);
+        render();
+      });
+    });
   }
 
   init();
