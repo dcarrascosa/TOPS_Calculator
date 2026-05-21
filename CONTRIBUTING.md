@@ -13,7 +13,7 @@ Thanks for wanting to help. This is a small project so the rules are short.
 
 ## What's welcome
 
-- **New models in the preset list.** Just add an entry to the model list in `app.js` with parameter count and (if applicable) active parameters for MoE. Cite a source in the PR.
+- **New models in the preset list.** Add an entry to the `MODELS` array in `calculator.js`. Required fields: `name`, `params` (total in billions, for memory), `active` (params per token, equal to total for dense models, smaller for MoE), `layers`, `kvHeads`, `headDim`. Cite the Hugging Face model card in the PR.
 - **Better defaults / smarter heuristics.** If you have benchmarks showing the efficiency factor or bandwidth utilization should be different, share the data.
 - **New hardware presets** (M4 Ultra, Snapdragon X, NVIDIA GPUs, AMD APUs…). The calculator is Mac-flavored today but the math is generic.
 - **UX polish.** Layout, accessibility, dark mode tweaks.

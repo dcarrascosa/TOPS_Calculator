@@ -4,25 +4,40 @@
 
 (function (root) {
   // --- model presets --------------------------------------------------------
+  // Architecture fields (layers, kvHeads, headDim) sourced from each model's
+  // official Hugging Face card. Best-effort, not guaranteed exact — the
+  // calculator math is tolerant to small architecture variations.
   const MODELS = [
-    { name: 'Llama 3.2 1B',       params: 1.23, active: 1.23, layers: 16, kvHeads: 8,  headDim: 64  },
-    { name: 'Llama 3.2 3B',       params: 3.21, active: 3.21, layers: 28, kvHeads: 8,  headDim: 128 },
-    { name: 'Llama 3.1 / 3 8B',   params: 8.03, active: 8.03, layers: 32, kvHeads: 8,  headDim: 128 },
-    { name: 'Llama 3.3 / 3.1 70B',params: 70.6, active: 70.6, layers: 80, kvHeads: 8,  headDim: 128 },
-    { name: 'Mistral 7B',         params: 7.24, active: 7.24, layers: 32, kvHeads: 8,  headDim: 128 },
-    { name: 'Mistral Nemo 12B',   params: 12.2, active: 12.2, layers: 40, kvHeads: 8,  headDim: 128 },
-    { name: 'Mistral Small 22B',  params: 22.2, active: 22.2, layers: 56, kvHeads: 8,  headDim: 128 },
-    { name: 'Mixtral 8x7B (MoE)', params: 46.7, active: 12.9, layers: 32, kvHeads: 8,  headDim: 128 },
-    { name: 'Phi-3 mini 3.8B',    params: 3.82, active: 3.82, layers: 32, kvHeads: 32, headDim: 96  },
-    { name: 'Phi-3 medium 14B',   params: 14.0, active: 14.0, layers: 40, kvHeads: 10, headDim: 128 },
-    { name: 'Qwen 2.5 7B',        params: 7.62, active: 7.62, layers: 28, kvHeads: 4,  headDim: 128 },
-    { name: 'Qwen 2.5 14B',       params: 14.8, active: 14.8, layers: 48, kvHeads: 8,  headDim: 128 },
-    { name: 'Qwen 2.5 32B',       params: 32.8, active: 32.8, layers: 64, kvHeads: 8,  headDim: 128 },
-    { name: 'Qwen 2.5 72B',       params: 72.7, active: 72.7, layers: 80, kvHeads: 8,  headDim: 128 },
-    { name: 'Gemma 2 2B',         params: 2.61, active: 2.61, layers: 26, kvHeads: 4,  headDim: 256 },
-    { name: 'Gemma 2 9B',         params: 9.24, active: 9.24, layers: 42, kvHeads: 8,  headDim: 256 },
-    { name: 'Gemma 2 27B',        params: 27.2, active: 27.2, layers: 46, kvHeads: 16, headDim: 128 },
-    { name: 'Custom…',            custom: true },
+    { name: 'Llama 3.2 1B',           params: 1.23, active: 1.23, layers: 16, kvHeads: 8,   headDim: 64  },
+    { name: 'Llama 3.2 3B',           params: 3.21, active: 3.21, layers: 28, kvHeads: 8,   headDim: 128 },
+    { name: 'Llama 3.1 / 3 8B',       params: 8.03, active: 8.03, layers: 32, kvHeads: 8,   headDim: 128 },
+    { name: 'Llama 3.3 / 3.1 70B',    params: 70.6, active: 70.6, layers: 80, kvHeads: 8,   headDim: 128 },
+    { name: 'Llama 4 Scout 17B-16E (MoE)',    params: 109,  active: 17,   layers: 64, kvHeads: 8,   headDim: 128 },
+    { name: 'Llama 4 Maverick 17B-128E (MoE)',params: 400,  active: 17,   layers: 64, kvHeads: 8,   headDim: 128 },
+    { name: 'Mistral 7B',             params: 7.24, active: 7.24, layers: 32, kvHeads: 8,   headDim: 128 },
+    { name: 'Mistral Nemo 12B',       params: 12.2, active: 12.2, layers: 40, kvHeads: 8,   headDim: 128 },
+    { name: 'Mistral Small 22B',      params: 22.2, active: 22.2, layers: 56, kvHeads: 8,   headDim: 128 },
+    { name: 'Mixtral 8x7B (MoE)',     params: 46.7, active: 12.9, layers: 32, kvHeads: 8,   headDim: 128 },
+    { name: 'Mixtral 8x22B (MoE)',    params: 141,  active: 39,   layers: 56, kvHeads: 8,   headDim: 128 },
+    { name: 'DeepSeek V3 (MoE)',      params: 671,  active: 37,   layers: 61, kvHeads: 128, headDim: 128 },
+    { name: 'Phi-3 mini 3.8B',        params: 3.82, active: 3.82, layers: 32, kvHeads: 32,  headDim: 96  },
+    { name: 'Phi-3 medium 14B',       params: 14.0, active: 14.0, layers: 40, kvHeads: 10,  headDim: 128 },
+    { name: 'Phi-4 14B',              params: 14.7, active: 14.7, layers: 40, kvHeads: 10,  headDim: 128 },
+    { name: 'Qwen 2.5 7B',            params: 7.62, active: 7.62, layers: 28, kvHeads: 4,   headDim: 128 },
+    { name: 'Qwen 2.5 14B',           params: 14.8, active: 14.8, layers: 48, kvHeads: 8,   headDim: 128 },
+    { name: 'Qwen 2.5 32B',           params: 32.8, active: 32.8, layers: 64, kvHeads: 8,   headDim: 128 },
+    { name: 'Qwen 2.5 72B',           params: 72.7, active: 72.7, layers: 80, kvHeads: 8,   headDim: 128 },
+    { name: 'Qwen 3 8B',              params: 8.2,  active: 8.2,  layers: 36, kvHeads: 8,   headDim: 128 },
+    { name: 'Qwen 3 14B',             params: 14.8, active: 14.8, layers: 40, kvHeads: 8,   headDim: 128 },
+    { name: 'Qwen 3 32B',             params: 32.8, active: 32.8, layers: 64, kvHeads: 8,   headDim: 128 },
+    { name: 'Qwen 3 235B-A22B (MoE)', params: 235,  active: 22,   layers: 94, kvHeads: 8,   headDim: 128 },
+    { name: 'Gemma 2 2B',             params: 2.61, active: 2.61, layers: 26, kvHeads: 4,   headDim: 256 },
+    { name: 'Gemma 2 9B',             params: 9.24, active: 9.24, layers: 42, kvHeads: 8,   headDim: 256 },
+    { name: 'Gemma 2 27B',            params: 27.2, active: 27.2, layers: 46, kvHeads: 16,  headDim: 128 },
+    { name: 'Gemma 3 4B',             params: 4.3,  active: 4.3,  layers: 34, kvHeads: 4,   headDim: 256 },
+    { name: 'Gemma 3 12B',            params: 12.2, active: 12.2, layers: 48, kvHeads: 8,   headDim: 256 },
+    { name: 'Gemma 3 27B',            params: 27.4, active: 27.4, layers: 62, kvHeads: 16,  headDim: 128 },
+    { name: 'Custom…',                custom: true },
   ];
 
   // --- hardware presets -----------------------------------------------------

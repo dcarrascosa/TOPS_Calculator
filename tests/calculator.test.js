@@ -296,3 +296,21 @@ test('M4 family is rated at 38 TOPS (the number the user asked about)', () => {
     expect(h.tops).toBe(38);
   }
 });
+
+test('every MoE model has active params strictly less than total', () => {
+  const moe = C.MODELS.filter((m) => !m.custom && /\(MoE\)/.test(m.name));
+  expect(moe.length).toBeGreaterThan(0);
+  for (const m of moe) {
+    expect(m.active).toBeLessThan(m.params);
+  }
+});
+
+test('preset list includes flagship 2024-2025 models', () => {
+  const names = C.MODELS.map((m) => m.name);
+  expect(names.some((n) => n.startsWith('Llama 4 Scout'))).toBe(true);
+  expect(names.some((n) => n.startsWith('Llama 4 Maverick'))).toBe(true);
+  expect(names.some((n) => n.startsWith('DeepSeek V3'))).toBe(true);
+  expect(names.some((n) => n.startsWith('Phi-4'))).toBe(true);
+  expect(names.some((n) => n.startsWith('Qwen 3'))).toBe(true);
+  expect(names.some((n) => n.startsWith('Gemma 3'))).toBe(true);
+});
