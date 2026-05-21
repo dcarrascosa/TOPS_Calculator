@@ -1,6 +1,6 @@
 # LLM TOPS Calculator
 
-[![tests](https://github.com/dcarrascosa/tops_calculator/actions/workflows/tests.yml/badge.svg)](https://github.com/dcarrascosa/tops_calculator/actions/workflows/tests.yml)
+[![tests](https://github.com/dcarrascosa/TOPS_Calculator/actions/workflows/tests.yml/badge.svg)](https://github.com/dcarrascosa/TOPS_Calculator/actions/workflows/tests.yml)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
@@ -28,7 +28,7 @@ Built specifically to answer the question: **are 38–50 TOPS enough for profess
 
 ## How to run it
 
-**Live demo:** [dcarrascosa.github.io/tops_calculator](https://dcarrascosa.github.io/tops_calculator/) — auto-deployed from `main` on every merge.
+**Live demo:** [dcarrascosa.github.io/TOPS_Calculator](https://dcarrascosa.github.io/TOPS_Calculator/) — auto-deployed from `main` on every merge.
 
 To run it locally — it's pure HTML + CSS + JS. No build step. Just open it.
 
