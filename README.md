@@ -101,3 +101,9 @@ For batch=1 inference (the common case on a laptop), this is almost always the r
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). PRs welcome.
+
+## Author
+
+Ideated, designed and implemented by **David Carrascosa Bolaños**.
+
+Built with the support of AI-assisted coding tools.

@@ -221,6 +221,16 @@ test.describe('LLM TOPS Calculator', () => {
     await expect(page.locator('#verdict')).toContainText('can handle');
   });
 
+  test('footer credits David Carrascosa Bolaños and mentions AI-assisted tools', async ({ page }) => {
+    const credit = page.locator('.foot .credit');
+    await expect(credit).toContainText('David Carrascosa Bolaños');
+    await expect(credit).toContainText('AI-assisted');
+
+    await page.click('.lang-btn[data-lang="es"]');
+    await expect(credit).toContainText('David Carrascosa Bolaños');
+    await expect(credit).toContainText('asistidas por IA');
+  });
+
   test('declares an inline svg favicon (no /favicon.ico 404)', async ({ page }) => {
     const requests404 = [];
     page.on('response', (res) => {
