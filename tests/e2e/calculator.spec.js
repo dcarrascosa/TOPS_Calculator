@@ -157,6 +157,25 @@ test.describe('LLM TOPS Calculator', () => {
     expect(copied).toContain('?');
   });
 
+  test('comparison chart renders with one bar per preset', async ({ page }) => {
+    await expect(page.locator('.chart-card h2')).toContainText('What fits your hardware');
+    const bars = await page.locator('.chart svg rect.bar').count();
+    expect(bars).toBeGreaterThanOrEqual(5);
+  });
+
+  test('chart bars recolor when the target tokens/sec changes', async ({ page }) => {
+    // Default target 20 — get bar classes
+    const at20 = await page.locator('.chart svg rect.bar').evaluateAll(
+      (els) => els.map((e) => e.getAttribute('class'))
+    );
+    // Crank target to 60 — some good bars should drop to warn/bad
+    await page.selectOption('#targetPreset', '60');
+    const at60 = await page.locator('.chart svg rect.bar').evaluateAll(
+      (els) => els.map((e) => e.getAttribute('class'))
+    );
+    expect(at60).not.toEqual(at20);
+  });
+
   test('declares an inline svg favicon (no /favicon.ico 404)', async ({ page }) => {
     const requests404 = [];
     page.on('response', (res) => {

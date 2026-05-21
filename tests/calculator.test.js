@@ -419,3 +419,41 @@ test('encode then decode round-trips a full state', () => {
   expect(decoded.efficiency).toBe(original.efficiency);
   expect(decoded.hardwareName).toBe(original.hardwareName);
 });
+
+// ---------------------------------------------------------------------------
+// buildComparison
+// ---------------------------------------------------------------------------
+test('buildComparison returns one entry per chart preset', () => {
+  const m4 = C.HARDWARE.find((h) => h.name === 'Apple M4');
+  const data = C.buildComparison({ hw: m4, quantBits: 4, target: 20 });
+  expect(data.length).toBe(C.CHART_MODEL_NAMES.length);
+  for (const d of data) {
+    expect(typeof d.name).toBe('string');
+    expect(typeof d.ceiling).toBe('number');
+    expect(['good', 'warn', 'bad']).toContain(d.verdict);
+  }
+});
+
+test('buildComparison: smaller models get higher ceilings', () => {
+  const m4 = C.HARDWARE.find((h) => h.name === 'Apple M4');
+  const data = C.buildComparison({ hw: m4, quantBits: 4, target: 20 });
+  const llama1B  = data.find((d) => d.name === 'Llama 3.2 1B');
+  const llama70B = data.find((d) => d.name === 'Llama 3.3 / 3.1 70B');
+  expect(llama1B.ceiling).toBeGreaterThan(llama70B.ceiling);
+});
+
+test('buildComparison: 1B model on M4 is good, 70B is bad at 20 t/s', () => {
+  const m4 = C.HARDWARE.find((h) => h.name === 'Apple M4');
+  const data = C.buildComparison({ hw: m4, quantBits: 4, target: 20 });
+  expect(data.find((d) => d.name === 'Llama 3.2 1B').verdict).toBe('good');
+  expect(data.find((d) => d.name === 'Llama 3.3 / 3.1 70B').verdict).toBe('bad');
+});
+
+test('buildComparison returns [] when hardware has no bandwidth', () => {
+  const data = C.buildComparison({
+    hw: { tops: 100, bandwidth: null },
+    quantBits: 4,
+    target: 20,
+  });
+  expect(data).toEqual([]);
+});
