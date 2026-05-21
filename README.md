@@ -1,6 +1,14 @@
 # LLM TOPS Calculator
 
 [![tests](https://github.com/dcarrascosa/tops_calculator/actions/workflows/tests.yml/badge.svg)](https://github.com/dcarrascosa/tops_calculator/actions/workflows/tests.yml)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![Node.js](https://img.shields.io/badge/Node.js-5FA04E?logo=nodedotjs&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
 
 Interactive calculator that estimates how many **TOPS** (Tera Operations Per Second) you need to run local language models — Llama 3, Mistral, Qwen, Gemma, Phi… — at different quantization levels (FP16, 8-bit, 4-bit, 3-bit, 2-bit) and target speeds.
 
