@@ -5,10 +5,11 @@ Thanks for wanting to help. This is a small project so the rules are short.
 ## Quick start
 
 1. Fork the repo and create a branch from `main` for your change.
-2. Open `index.html` in a browser — that's the whole dev setup.
+2. `bun install` (the project uses [Bun](https://bun.sh) as runtime, package manager and test runner).
 3. Make your change.
-4. Sanity-check it in the browser (try a couple of models + quantizations, make sure nothing breaks).
-5. Open a PR with a clear description of what changed and why.
+4. `bun run test:all` should be green (37 unit + 12 e2e at the time of writing).
+5. Sanity-check it in the browser (`bun run serve`).
+6. Open a PR with a clear description of what changed and why.
 
 ## What's welcome
 

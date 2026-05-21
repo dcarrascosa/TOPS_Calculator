@@ -6,7 +6,7 @@
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
-![Node.js](https://img.shields.io/badge/Node.js-5FA04E?logo=nodedotjs&logoColor=white)
+![Bun](https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
 
@@ -28,39 +28,41 @@ Built specifically to answer the question: **are 38–50 TOPS enough for profess
 
 ## How to run it
 
-It's pure HTML + CSS + JS. No build step, no dependencies, no install.
+It's pure HTML + CSS + JS. No build step. Just open it.
 
 1. Clone the repo.
 2. Double-click `index.html`.
 
-That's it. Or run the bundled npm script (uses `http-server`, works on Windows / macOS / Linux):
+Or run the bundled dev server (cross-platform):
 
 ```bash
-npm install   # only the first time
-npm run serve
+bun install   # only the first time
+bun run serve
 # then open http://localhost:8000
 ```
 
+> Need [Bun](https://bun.sh) installed. The project uses Bun as its runtime, package manager and test runner. `npm` is not supported.
+
 ## Tests
 
-Unit tests for the calculator math (no dependencies, uses Node's built-in test runner):
+Unit tests for the calculator math (`bun:test`):
 
 ```bash
-npm test
+bun test
 ```
 
 End-to-end tests with Playwright (drives a real browser against the live page):
 
 ```bash
-npm install        # only the first time, installs @playwright/test
-npx playwright install chromium   # only the first time, downloads the browser
-npm run test:e2e
+bun install                              # only the first time
+bunx playwright install chromium         # only the first time, downloads the browser
+bun run test:e2e
 ```
 
 Run both in one go:
 
 ```bash
-npm run test:all
+bun run test:all
 ```
 
 ## The math (short version)
