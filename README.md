@@ -1,6 +1,7 @@
 # LLM TOPS Calculator
 
 [![tests](https://github.com/dcarrascosa/TOPS_Calculator/actions/workflows/tests.yml/badge.svg)](https://github.com/dcarrascosa/TOPS_Calculator/actions/workflows/tests.yml)
+[![live demo](https://img.shields.io/badge/demo-live-2EAD33?logo=github)](https://dcarrascosa.github.io/TOPS_Calculator/)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
@@ -9,6 +10,8 @@
 ![Bun](https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?logo=githubactions&logoColor=white)
+
+> **Try it live:** https://dcarrascosa.github.io/TOPS_Calculator/ — no install needed, auto-deployed from `main` on every merge.
 
 Interactive calculator that estimates how many **TOPS** (Tera Operations Per Second) you need to run local language models — Llama 3, Mistral, Qwen, Gemma, Phi… — at different quantization levels (FP16, 8-bit, 4-bit, 3-bit, 2-bit) and target speeds.
 
@@ -28,7 +31,7 @@ Built specifically to answer the question: **are 38–50 TOPS enough for profess
 
 ## How to run it
 
-**Live demo:** [dcarrascosa.github.io/TOPS_Calculator](https://dcarrascosa.github.io/TOPS_Calculator/) — auto-deployed from `main` on every merge.
+Easiest: open the [live demo](https://dcarrascosa.github.io/TOPS_Calculator/). Nothing to install.
 
 To run it locally — it's pure HTML + CSS + JS. No build step. Just open it.
 
