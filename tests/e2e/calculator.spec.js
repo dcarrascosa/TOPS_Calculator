@@ -176,6 +176,23 @@ test.describe('LLM TOPS Calculator', () => {
     expect(at60).not.toEqual(at20);
   });
 
+  test('copy as markdown button copies a markdown report to clipboard', async ({ context, page }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.click('#copyMarkdownBtn');
+    await expect(page.locator('#exportFeedback')).toHaveText('Markdown copied');
+    const md = await page.evaluate(() => navigator.clipboard.readText());
+    expect(md).toContain('LLM TOPS Calculator');
+    expect(md).toContain('Apple M4');
+    expect(md).toContain('Weights memory');
+  });
+
+  test('download markdown triggers a file download', async ({ page }) => {
+    const downloadPromise = page.waitForEvent('download');
+    await page.click('#downloadMarkdownBtn');
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe('tops-calculator-report.md');
+  });
+
   test('declares an inline svg favicon (no /favicon.ico 404)', async ({ page }) => {
     const requests404 = [];
     page.on('response', (res) => {
