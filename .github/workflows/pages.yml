@@ -27,7 +27,7 @@ jobs:
       - name: prepare dist folder
         run: |
           mkdir -p dist
-          cp index.html styles.css calculator.js app.js dist/
+          cp index.html styles.css calculator.js app.js og-image.svg dist/
 
       - uses: actions/configure-pages@v5
 
