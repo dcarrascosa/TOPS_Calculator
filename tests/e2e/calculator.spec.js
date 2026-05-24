@@ -236,17 +236,21 @@ test.describe('LLM TOPS Calculator', () => {
     const ogTitle       = await page.locator('meta[property="og:title"]').getAttribute('content');
     const ogDescription = await page.locator('meta[property="og:description"]').getAttribute('content');
     const ogImage       = await page.locator('meta[property="og:image"]').getAttribute('content');
+    const ogImageType   = await page.locator('meta[property="og:image:type"]').getAttribute('content');
     const ogUrl         = await page.locator('meta[property="og:url"]').getAttribute('content');
     expect(ogType).toBe('website');
-    expect(ogTitle).toContain('LLM TOPS Calculator');
-    expect(ogDescription.length).toBeGreaterThan(40);
-    expect(ogImage).toMatch(/og-image\.svg$/);
+    expect(ogTitle.length).toBeGreaterThanOrEqual(50);
+    expect(ogTitle.length).toBeLessThanOrEqual(70);
+    expect(ogDescription.length).toBeGreaterThanOrEqual(110);
+    expect(ogDescription.length).toBeLessThanOrEqual(160);
+    expect(ogImage).toMatch(/og-image\.png$/);
+    expect(ogImageType).toBe('image/png');
     expect(ogUrl).toMatch(/TOPS_Calculator/);
 
     const twitterCard  = await page.locator('meta[name="twitter:card"]').getAttribute('content');
     const twitterImage = await page.locator('meta[name="twitter:image"]').getAttribute('content');
     expect(twitterCard).toBe('summary_large_image');
-    expect(twitterImage).toMatch(/og-image\.svg$/);
+    expect(twitterImage).toMatch(/og-image\.png$/);
   });
 
   test('declares an inline svg favicon (no /favicon.ico 404)', async ({ page }) => {

@@ -7,7 +7,8 @@
     "test": "bun test tests/calculator.test.js",
     "test:e2e": "bunx playwright test",
     "test:all": "bun run test && bun run test:e2e",
-    "serve": "bunx http-server -p 8000 -c-1"
+    "serve": "bunx http-server -p 8000 -c-1",
+    "build:og": "bun scripts/build-og-image.mjs"
   },
   "license": "MIT",
   "devDependencies": {
