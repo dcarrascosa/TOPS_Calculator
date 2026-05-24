@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" width="1200" height="1200">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f1115"/>
+      <stop offset="100%" stop-color="#1f232c"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#5b9dff"/>
+      <stop offset="100%" stop-color="#7eb4ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="1200" fill="url(#bg)"/>
+  <rect x="0" y="0" width="8" height="1200" fill="url(#bar)"/>
+
+  <!-- Header -->
+  <text x="60" y="100"  font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+        font-size="22"  font-weight="500" letter-spacing="4" fill="#5b9dff">LLM TOPS CALCULATOR</text>
+  <text x="60" y="180"  font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+        font-size="72"  font-weight="700" fill="#e6e8ec">TOPS aren&apos;t the</text>
+  <text x="60" y="260"  font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+        font-size="72"  font-weight="700" fill="#e6e8ec">whole story.</text>
+  <text x="60" y="320"  font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+        font-size="26"  font-weight="400" fill="#9aa3b2">Tokens/sec for Llama 3 8B at 4-bit, by chip.</text>
+
+  <!-- Column headers -->
+  <text x="60"  y="410" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+        font-size="18" font-weight="600" letter-spacing="2" fill="#9aa3b2">CHIP</text>
+  <text x="490" y="410" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+        font-size="18" font-weight="600" letter-spacing="2" fill="#9aa3b2">TOPS</text>
+  <text x="640" y="410" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+        font-size="18" font-weight="600" letter-spacing="2" fill="#9aa3b2">TOKENS / SECOND</text>
+
+  <line x1="60" y1="430" x2="1140" y2="430" stroke="#2a2f3a" stroke-width="1"/>
+
+  <!-- Row: Apple M4 — 38 TOPS, 120 GB/s → ~21 t/s -->
+  <g transform="translate(0, 480)">
+    <text x="60"  y="0"  font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="32" font-weight="600" fill="#e6e8ec">Apple M4</text>
+    <text x="60"  y="34" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="18" font-weight="400" fill="#9aa3b2">120 GB/s memory</text>
+    <text x="490" y="6"  font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="32" font-weight="600" fill="#e6e8ec">38</text>
+    <rect x="640" y="-22" width="86" height="44" rx="6" fill="url(#bar)"/>
+    <text x="740" y="10" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="32" font-weight="700" fill="#e6e8ec">~21</text>
+  </g>
+
+  <!-- Row: Intel Core Ultra 200V (Lunar Lake) — 48 TOPS, 136 GB/s → ~24 t/s -->
+  <g transform="translate(0, 600)">
+    <text x="60"  y="0"  font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="32" font-weight="600" fill="#e6e8ec">Intel Core Ultra 200V</text>
+    <text x="60"  y="34" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="18" font-weight="400" fill="#9aa3b2">Lunar Lake · new Surface · 136 GB/s</text>
+    <text x="490" y="6"  font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="32" font-weight="600" fill="#e6e8ec">48</text>
+    <rect x="640" y="-22" width="98" height="44" rx="6" fill="url(#bar)"/>
+    <text x="752" y="10" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="32" font-weight="700" fill="#e6e8ec">~24</text>
+  </g>
+
+  <!-- Row: AMD Strix Halo — 50 TOPS, 256 GB/s → ~45 t/s -->
+  <g transform="translate(0, 720)">
+    <text x="60"  y="0"  font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="32" font-weight="600" fill="#e6e8ec">AMD Ryzen AI Max+ 395</text>
+    <text x="60"  y="34" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="18" font-weight="400" fill="#9aa3b2">Strix Halo · 256 GB/s</text>
+    <text x="490" y="6"  font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="32" font-weight="600" fill="#e6e8ec">50</text>
+    <rect x="640" y="-22" width="184" height="44" rx="6" fill="url(#bar)"/>
+    <text x="838" y="10" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="32" font-weight="700" fill="#e6e8ec">~45</text>
+  </g>
+
+  <!-- Row: Apple M4 Max — 38 TOPS, 546 GB/s → ~95 t/s -->
+  <g transform="translate(0, 840)">
+    <text x="60"  y="0"  font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="32" font-weight="600" fill="#e6e8ec">Apple M4 Max</text>
+    <text x="60"  y="34" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="18" font-weight="400" fill="#9aa3b2">546 GB/s memory</text>
+    <text x="490" y="6"  font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="32" font-weight="600" fill="#e6e8ec">38</text>
+    <rect x="640" y="-22" width="389" height="44" rx="6" fill="url(#bar)"/>
+    <text x="1043" y="10" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="32" font-weight="700" fill="#e6e8ec">~95</text>
+  </g>
+
+  <!-- Row: NVIDIA RTX 4090 — 660 TOPS, 1008 GB/s → ~176 t/s -->
+  <g transform="translate(0, 960)">
+    <text x="60"  y="0"  font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="32" font-weight="600" fill="#e6e8ec">NVIDIA RTX 4090</text>
+    <text x="60"  y="34" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="18" font-weight="400" fill="#9aa3b2">1008 GB/s memory</text>
+    <text x="490" y="6"  font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="32" font-weight="600" fill="#e6e8ec">660</text>
+    <rect x="640" y="-22" width="500" height="44" rx="6" fill="url(#bar)"/>
+    <text x="640" y="56" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+          font-size="32" font-weight="700" fill="#e6e8ec">~176</text>
+  </g>
+
+  <!-- Footer -->
+  <line x1="60" y1="1080" x2="1140" y2="1080" stroke="#2a2f3a" stroke-width="1"/>
+  <text x="60" y="1120" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+        font-size="20" font-weight="500" fill="#e6e8ec">Same TOPS class can mean 4× different speed.</text>
+  <text x="60" y="1148" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+        font-size="18" font-weight="400" fill="#9aa3b2">The real bottleneck for batch=1 LLM inference is memory bandwidth.</text>
+  <text x="60" y="1180" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif"
+        font-size="20" font-weight="500" fill="#5b9dff">dcarrascosa.github.io/TOPS_Calculator</text>
+</svg>

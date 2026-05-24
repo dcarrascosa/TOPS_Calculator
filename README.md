@@ -15,7 +15,9 @@
 
 Interactive calculator that estimates how many **TOPS** (Tera Operations Per Second) you need to run local language models — Llama 3, Mistral, Qwen, Gemma, Phi… — at different quantization levels (FP16, 8-bit, 4-bit, 3-bit, 2-bit) and target speeds.
 
-Built specifically to answer the question: **are 38–50 TOPS enough for professional use on a Mac?** (spoiler: the answer depends more on memory bandwidth than on TOPS, and the calculator explains why).
+Built specifically to answer the question: **are 38–50 TOPS enough for professional use on a Mac or a new Copilot+ PC?** (spoiler: the answer depends more on memory bandwidth than on TOPS, and the calculator explains why).
+
+![TOPS aren't the whole story — same 38-50 TOPS class, very different tokens/sec because of memory bandwidth](docs/infographic.png)
 
 ## What it does
 
