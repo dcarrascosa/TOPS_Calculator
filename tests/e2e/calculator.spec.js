@@ -231,6 +231,24 @@ test.describe('LLM TOPS Calculator', () => {
     await expect(credit).toContainText('asistidas por IA');
   });
 
+  test('declares open graph and twitter card meta tags', async ({ page }) => {
+    const ogType        = await page.locator('meta[property="og:type"]').getAttribute('content');
+    const ogTitle       = await page.locator('meta[property="og:title"]').getAttribute('content');
+    const ogDescription = await page.locator('meta[property="og:description"]').getAttribute('content');
+    const ogImage       = await page.locator('meta[property="og:image"]').getAttribute('content');
+    const ogUrl         = await page.locator('meta[property="og:url"]').getAttribute('content');
+    expect(ogType).toBe('website');
+    expect(ogTitle).toContain('LLM TOPS Calculator');
+    expect(ogDescription.length).toBeGreaterThan(40);
+    expect(ogImage).toMatch(/og-image\.svg$/);
+    expect(ogUrl).toMatch(/TOPS_Calculator/);
+
+    const twitterCard  = await page.locator('meta[name="twitter:card"]').getAttribute('content');
+    const twitterImage = await page.locator('meta[name="twitter:image"]').getAttribute('content');
+    expect(twitterCard).toBe('summary_large_image');
+    expect(twitterImage).toMatch(/og-image\.svg$/);
+  });
+
   test('declares an inline svg favicon (no /favicon.ico 404)', async ({ page }) => {
     const requests404 = [];
     page.on('response', (res) => {
