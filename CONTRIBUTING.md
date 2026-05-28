@@ -33,6 +33,31 @@ Thanks for wanting to help. This is a small project so the rules are short.
 - Keep functions small and named after what they do.
 - If you add a new constant (chip TOPS, model params), put a comment with the source/link.
 
+## Regenerating images (OG / infographic)
+
+`og-image.png` and `docs/infographic.png` are rendered from their `.svg` source via Playwright Chromium:
+
+```bash
+bun run build:images   # regenerates both
+bun run build:og       # only og-image.png
+bun run build:infographic   # only docs/infographic.png
+```
+
+> ⚠️ **Windows note:** Bun + Playwright + Windows currently times out launching the headless Chromium (Bun's `spawn` and Windows Defender's real-time scanning interfere with the IPC handshake). If you're on Windows, run these commands from inside **WSL** instead:
+>
+> ```bash
+> # one-time setup in WSL Ubuntu
+> curl -fsSL https://bun.sh/install | bash
+> # clone / cd into the repo (in WSL or via /mnt/c/...)
+> bun install
+> bunx playwright install --with-deps chromium
+> bun run build:images
+> ```
+>
+> WSL is Linux, so there's no IPC issue. Native font fallback (`fonts-noto-color-emoji` is preinstalled on Ubuntu) renders the abacus emoji in the OG image cleanly.
+
+After regenerating, commit both the `.svg` (source of truth) and the resulting `.png` (what gets served by Pages).
+
 ## Commit messages
 
 - Present tense, lowercase, short.
