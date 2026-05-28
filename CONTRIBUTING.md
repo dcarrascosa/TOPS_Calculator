@@ -34,7 +34,7 @@ Keep the slug short and descriptive. Use hyphens, not underscores. Lowercase onl
 `main` is protected. Direct pushes are blocked. To land a change you **must**:
 
 1. Open a PR with the [PR template](.github/pull_request_template.md) filled in.
-2. Wait for the **unit tests** and **playwright e2e** checks to pass.
+2. Wait for the **unit tests** and **Playwright e2e** checks to pass.
 3. Have at least 1 approving review (the repo owner can self-merge with `gh pr merge <num> --admin` since the maintainer count is one).
 4. Resolve all review comment threads.
 5. Squash-merge (linear history is enforced — no merge commits).
