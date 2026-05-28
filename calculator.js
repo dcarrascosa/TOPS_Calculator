@@ -302,6 +302,9 @@
       'chart.title':          'What fits your hardware',
       'chart.help':           'Tokens/sec ceiling (bandwidth-bound, batch=1) for a curated set of models on your selected hardware at the chosen quantization. Bars are coloured against your tokens/sec target.',
       'chart.pickHw':         'Select a hardware preset to see the comparison.',
+      'theme.auto':           'Auto',
+      'theme.light':          'Light',
+      'theme.dark':           'Dark',
     },
     es: {
       'title':                'Calculadora de TOPS para LLMs',
@@ -365,6 +368,9 @@
       'chart.title':          'Qué cabe en tu hardware',
       'chart.help':           'Techo de tokens/s (limitado por ancho de banda, batch=1) para un conjunto de modelos representativos en el hardware seleccionado con la cuantización elegida. Las barras se colorean contra tu objetivo de tokens/s.',
       'chart.pickHw':         'Elige un preset de hardware para ver la comparación.',
+      'theme.auto':           'Auto',
+      'theme.light':          'Claro',
+      'theme.dark':           'Oscuro',
     },
   };
 
