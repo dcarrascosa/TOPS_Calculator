@@ -13,6 +13,24 @@
 
   const TARGET_PRESETS = ['5', '10', '20', '30', '60'];
 
+  // --- theme ----------------------------------------------------------------
+  const THEME_KEY = 'tops_calc_theme';
+  let currentTheme = localStorage.getItem(THEME_KEY) || 'auto';
+
+  function applyTheme(theme) {
+    currentTheme = theme;
+    if (theme === 'auto') {
+      localStorage.removeItem(THEME_KEY);
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      localStorage.setItem(THEME_KEY, theme);
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+    document.querySelectorAll('.theme-btn').forEach((btn) => {
+      btn.setAttribute('aria-pressed', btn.dataset.theme === theme ? 'true' : 'false');
+    });
+  }
+
   // --- language -------------------------------------------------------------
   const LANG_KEY = 'tops_calc_lang';
   let currentLang = localStorage.getItem(LANG_KEY) || 'en';
@@ -349,6 +367,7 @@
 
   function init() {
     populate();
+    applyTheme(currentTheme);
     applyTranslations(currentLang);
     applyStateFromUrl();
     toggleCustomFields();
@@ -372,6 +391,10 @@
         applyTranslations(btn.dataset.lang);
         render();
       });
+    });
+
+    document.querySelectorAll('.theme-btn').forEach((btn) => {
+      btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
     });
   }
 

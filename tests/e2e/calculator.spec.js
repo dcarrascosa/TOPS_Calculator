@@ -253,6 +253,41 @@ test.describe('LLM TOPS Calculator', () => {
     expect(twitterImage).toMatch(/og-image\.png$/);
   });
 
+  test('theme toggle has three buttons and starts on Auto', async ({ page }) => {
+    await expect(page.locator('.theme-btn[data-theme="auto"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.theme-btn[data-theme="light"]')).toHaveAttribute('aria-pressed', 'false');
+    await expect(page.locator('.theme-btn[data-theme="dark"]')).toHaveAttribute('aria-pressed', 'false');
+    // Auto = no data-theme attribute on <html>
+    const htmlTheme = await page.locator('html').getAttribute('data-theme');
+    expect(htmlTheme).toBeNull();
+  });
+
+  test('clicking Dark sets data-theme on html and persists across reload', async ({ page }) => {
+    await page.click('.theme-btn[data-theme="dark"]');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(page.locator('.theme-btn[data-theme="dark"]')).toHaveAttribute('aria-pressed', 'true');
+
+    const stored = await page.evaluate(() => localStorage.getItem('tops_calc_theme'));
+    expect(stored).toBe('dark');
+
+    await page.reload();
+    // No flash: data-theme is set before CSS by the inline FOUC script.
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(page.locator('.theme-btn[data-theme="dark"]')).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('clicking Auto removes data-theme and clears localStorage', async ({ page }) => {
+    await page.click('.theme-btn[data-theme="light"]');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+
+    await page.click('.theme-btn[data-theme="auto"]');
+    const htmlTheme = await page.locator('html').getAttribute('data-theme');
+    expect(htmlTheme).toBeNull();
+
+    const stored = await page.evaluate(() => localStorage.getItem('tops_calc_theme'));
+    expect(stored).toBeNull();
+  });
+
   test('declares an inline svg favicon (no /favicon.ico 404)', async ({ page }) => {
     const requests404 = [];
     page.on('response', (res) => {

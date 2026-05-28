@@ -27,6 +27,30 @@
   }
 }
 
+/* Manual theme override (set by app.js + the inline FOUC script in index.html).
+   These selectors win over the media query thanks to attribute specificity. */
+:root[data-theme="dark"] {
+  --bg: #0f1115;
+  --bg-card: #171a21;
+  --bg-input: #1f232c;
+  --border: #2a2f3a;
+  --text: #e6e8ec;
+  --text-dim: #9aa3b2;
+  --accent: #5b9dff;
+  --accent-hover: #7eb4ff;
+}
+
+:root[data-theme="light"] {
+  --bg: #f6f7f9;
+  --bg-card: #ffffff;
+  --bg-input: #f1f3f7;
+  --border: #e2e6ee;
+  --text: #1a1d24;
+  --text-dim: #5b6470;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -58,18 +82,27 @@ html, body {
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
-.lang-toggle {
+.topbar-controls {
+  display: inline-flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.lang-toggle,
+.theme-toggle {
   display: inline-flex;
   background: var(--bg-input);
   border: 1px solid var(--border);
   border-radius: 6px;
   overflow: hidden;
-  margin-top: 4px;
 }
 
-.lang-btn {
+.lang-btn,
+.theme-btn {
   background: transparent;
   color: var(--text-dim);
   border: 0;
@@ -82,11 +115,13 @@ html, body {
   transition: background 0.15s, color 0.15s;
 }
 
-.lang-btn:hover {
+.lang-btn:hover,
+.theme-btn:hover {
   color: var(--text);
 }
 
-.lang-btn[aria-pressed="true"] {
+.lang-btn[aria-pressed="true"],
+.theme-btn[aria-pressed="true"] {
   background: var(--accent);
   color: white;
 }
