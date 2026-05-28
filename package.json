@@ -8,7 +8,9 @@
     "test:e2e": "bunx playwright test",
     "test:all": "bun run test && bun run test:e2e",
     "serve": "bunx http-server -p 8000 -c-1",
-    "build:og": "bun scripts/build-og-image.mjs"
+    "build:og": "bun scripts/render-svg.mjs og-image.svg og-image.png 1200 630",
+    "build:infographic": "bun scripts/render-svg.mjs docs/infographic.svg docs/infographic.png 1200 1200",
+    "build:images": "bun run build:og && bun run build:infographic"
   },
   "license": "MIT",
   "devDependencies": {
