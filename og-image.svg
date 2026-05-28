@@ -29,6 +29,4 @@
 
   <text x="80" y="570" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
         font-size="22" font-weight="500" fill="#5b9dff">Apple Silicon · NVIDIA · AMD · Copilot+ PC NPUs</text>
-
-  <text x="1010" y="540" font-size="200">🧮</text>
 </svg>
