@@ -4,12 +4,52 @@ Thanks for wanting to help. This is a small project so the rules are short.
 
 ## Quick start
 
-1. Fork the repo and create a branch from `main` for your change.
+1. Fork the repo and create a branch from `main` for your change. See [Branching strategy](#branching-strategy) below for naming.
 2. `bun install` (the project uses [Bun](https://bun.sh) as runtime, package manager and test runner).
 3. Make your change.
 4. `bun run test:all` should be green (37 unit + 12 e2e at the time of writing).
 5. Sanity-check it in the browser (`bun run serve`).
 6. Open a PR with a clear description of what changed and why.
+
+## Branching strategy
+
+Trunk-based development with short-lived feature branches off `main`. No `develop`, no long-lived release branches.
+
+### Branch naming
+
+| Prefix | For |
+|---|---|
+| `feat/` | A new user-visible feature or capability |
+| `fix/` | A bug fix |
+| `chore/` | Maintenance, refactors, infra, dependencies, tooling |
+| `docs/` | Documentation only (README, CONTRIBUTING, comments) |
+| `test/` | Tests added or changed in isolation |
+
+Examples from the project history: `feat/theme-toggle`, `chore/add-infographic`, `docs/wsl-render-images-note`, `fix/hidden-field-display`.
+
+Keep the slug short and descriptive. Use hyphens, not underscores. Lowercase only.
+
+### Branch protection on `main`
+
+`main` is protected. Direct pushes are blocked. To land a change you **must**:
+
+1. Open a PR with the [PR template](.github/pull_request_template.md) filled in.
+2. Wait for the **unit tests** and **Playwright e2e** checks to pass.
+3. Have at least 1 approving review (the repo owner can self-merge with `gh pr merge <num> --admin` since the maintainer count is one).
+4. Resolve all review comment threads.
+5. Squash-merge (linear history is enforced — no merge commits).
+6. The branch is auto-deleted on merge.
+
+Force-push and deletion of `main` are blocked for everyone, including admins.
+
+### Merging
+
+Always squash, never plain merge. From the CLI:
+
+```bash
+gh pr merge <num> --squash --delete-branch        # standard contributor flow
+gh pr merge <num> --squash --delete-branch --admin   # owner self-merge bypass
+```
 
 ## What's welcome
 
