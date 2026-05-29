@@ -30,22 +30,25 @@ const height = Number(heightArg) || 1200;
 const svg = readFileSync(input, 'utf8');
 
 const browser = await chromium.launch();
-const context = await browser.newContext({
-  viewport: { width, height },
-  deviceScaleFactor: 1,
-});
-const page = await context.newPage();
-await page.setContent(
-  `<!doctype html><html><head><style>
-     html, body { margin: 0; padding: 0; }
-     svg { display: block; }
-   </style></head>
-   <body>${svg}</body></html>`,
-  { waitUntil: 'networkidle' },
-);
-const svgEl = page.locator('svg').first();
-const buffer = await svgEl.screenshot({ type: 'png', omitBackground: false });
-writeFileSync(output, buffer);
-await browser.close();
+try {
+  const context = await browser.newContext({
+    viewport: { width, height },
+    deviceScaleFactor: 1,
+  });
+  const page = await context.newPage();
+  await page.setContent(
+    `<!doctype html><html><head><style>
+       html, body { margin: 0; padding: 0; }
+       svg { display: block; }
+     </style></head>
+     <body>${svg}</body></html>`,
+    { waitUntil: 'networkidle' },
+  );
+  const svgEl = page.locator('svg').first();
+  const buffer = await svgEl.screenshot({ type: 'png', omitBackground: false });
+  writeFileSync(output, buffer);
 
-console.log(`wrote ${outputArg} (${(buffer.length / 1024).toFixed(1)} KB, ${width}×${height})`);
+  console.log(`wrote ${outputArg} (${(buffer.length / 1024).toFixed(1)} KB, ${width}×${height})`);
+} finally {
+  await browser.close();
+}
